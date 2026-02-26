@@ -3,7 +3,7 @@
   "displayName": "WeatherWatch",
   "description": "在VS Code状态栏实时显示天气信息，支持自动位置检测和多种天气参数 | Real-time weather display in VS Code status bar with auto location detection",
   "version": "1.0.0",
-  "publisher": "weatherwatch",
+  "publisher": "ZhuoqunLi",
   "license": "MIT",
   "engines": {
     "vscode": "^1.60.0"
