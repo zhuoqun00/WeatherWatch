@@ -109,7 +109,7 @@
 ## ✅ GitHub 仓库准备
 
 ### 仓库基础设置
-- [ ] 仓库已创建: `zhuoqun-vscode-extensions/vscode-weather`
+- [ ] 仓库已创建: `zhuoqun00/WeatherWatch`
 - [ ] 仓库描述: "VS Code Weather - Real-time weather display"
 - [ ] 仓库主题标签: `vscode-extension`, `weather`, `typescript`
 - [ ] README.md 在首页显示

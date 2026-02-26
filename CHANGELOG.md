@@ -103,7 +103,7 @@
 
 #### 源代码安装
 ```bash
-git clone https://github.com/zhuoqun-vscode-extensions/vscode-weather.git
+git clone https://github.com/zhuoqun00/WeatherWatch.git
 cd vscode-weather
 npm install
 npm run compile
@@ -137,7 +137,7 @@ code --install-extension vscode-weather-1.0.0.vsix
 
 | 版本 | 日期 | 状态 | 链接 |
 |------|------|------|------|
-| 1.0.0 | 2024-02-26 | ✅ 已发布 | [v1.0.0](https://github.com/zhuoqun-vscode-extensions/vscode-weather/releases/tag/v1.0.0) |
+| 1.0.0 | 2024-02-26 | ✅ 已发布 | [v1.0.0](https://github.com/zhuoqun00/WeatherWatch/releases/tag/v1.0.0) |
 
 ---
 

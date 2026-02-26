@@ -108,7 +108,7 @@ vscode-weather-1.0.0.vsix (56KB)  # 可发布的 VS Code 扩展包
 
 **发布者**: weather-extension
 **扩展名**: vscode-weather
-**仓库**: https://github.com/zhuoqun-vscode-extensions/vscode-weather
+**仓库**: https://github.com/zhuoqun00/WeatherWatch
 **许可证**: MIT
 
 ---
@@ -134,7 +134,7 @@ git add .
 git commit -m "Initial commit: VS Code Weather v1.0.0"
 
 # 添加远程仓库
-git remote add origin https://github.com/zhuoqun-vscode-extensions/vscode-weather.git
+git remote add origin https://github.com/zhuoqun00/WeatherWatch.git
 
 # 推送到 GitHub
 git branch -M main
@@ -153,7 +153,7 @@ git push origin v1.0.0
 
 ### 步骤 3: 在 GitHub 上创建 Release
 
-1. 访问: https://github.com/zhuoqun-vscode-extensions/vscode-weather/releases
+1. 访问: https://github.com/zhuoqun00/WeatherWatch/releases
 2. 点击 "Draft a new release"
 3. 填写以下信息：
    - **Tag**: v1.0.0
@@ -222,10 +222,10 @@ npm run publish
 
 ### 📖 文档
 
-- [完整文档](https://github.com/zhuoqun-vscode-extensions/vscode-weather#readme)
-- [配置选项](https://github.com/zhuoqun-vscode-extensions/vscode-weather#-配置)
-- [故障排除](https://github.com/zhuoqun-vscode-extensions/vscode-weather#-故障排除)
-- [开发指南](https://github.com/zhuoqun-vscode-extensions/vscode-weather/blob/main/DEVELOPMENT.md)
+- [完整文档](https://github.com/zhuoqun00/WeatherWatch#readme)
+- [配置选项](https://github.com/zhuoqun00/WeatherWatch#-配置)
+- [故障排除](https://github.com/zhuoqun00/WeatherWatch#-故障排除)
+- [开发指南](https://github.com/zhuoqun00/WeatherWatch/blob/main/DEVELOPMENT.md)
 
 ### 🔗 资源
 

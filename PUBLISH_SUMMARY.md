@@ -142,7 +142,7 @@ Weather: 切换自动刷新
 ## 🔗 发布资源
 
 ### GitHub 仓库
-- **地址**: https://github.com/zhuoqun-vscode-extensions/vscode-weather
+- **地址**: https://github.com/zhuoqun00/WeatherWatch
 - **分支**: main
 - **标签**: v1.0.0
 
@@ -214,7 +214,7 @@ git add .
 git commit -m "Initial commit: VS Code Weather v1.0.0"
 
 # 添加远程仓库
-git remote add origin https://github.com/zhuoqun-vscode-extensions/vscode-weather.git
+git remote add origin https://github.com/zhuoqun00/WeatherWatch.git
 
 # 推送到 GitHub
 git branch -M main
@@ -230,7 +230,7 @@ git push origin v1.0.0
 
 ### 第 3 步：GitHub Release
 
-1. 访问: https://github.com/zhuoqun-vscode-extensions/vscode-weather/releases
+1. 访问: https://github.com/zhuoqun00/WeatherWatch/releases
 2. 点击 "Draft a new release"
 3. 填写信息：
    - Tag: v1.0.0

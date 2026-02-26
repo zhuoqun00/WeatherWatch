@@ -36,7 +36,7 @@ git add .
 git commit -m "Initial commit: VS Code Weather v1.0.0"
 
 # 添加远程仓库
-git remote add origin https://github.com/zhuoqun-vscode-extensions/vscode-weather.git
+git remote add origin https://github.com/zhuoqun00/WeatherWatch.git
 
 # 推送到GitHub
 git branch -M main
@@ -55,7 +55,7 @@ git push origin main
 
 #### 使用GitHub网页版：
 
-1. 转到 https://github.com/zhuoqun-vscode-extensions/vscode-weather/releases
+1. 转到 https://github.com/zhuoqun00/WeatherWatch/releases
 2. 点击 "Draft a new release"
 3. 填写以下信息：
 
@@ -89,9 +89,9 @@ git push origin main
 - 日出/日落时间 / Sunrise/Sunset time
 
 ### 🔗 资源 / Resources
-- Documentation: https://github.com/zhuoqun-vscode-extensions/vscode-weather#readme
-- Issue Tracker: https://github.com/zhuoqun-vscode-extensions/vscode-weather/issues
-- Source Code: https://github.com/zhuoqun-vscode-extensions/vscode-weather
+- Documentation: https://github.com/zhuoqun00/WeatherWatch#readme
+- Issue Tracker: https://github.com/zhuoqun00/WeatherWatch/issues
+- Source Code: https://github.com/zhuoqun00/WeatherWatch
 
 ### 📄 许可证 / License
 MIT
