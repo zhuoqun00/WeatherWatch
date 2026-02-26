@@ -1,0 +1,165 @@
+/**
+ * 位置检测模块
+ * 负责通过IP地址或用户输入获取地理位置
+ */
+
+import * as vscode from 'vscode';
+import * as https from 'https';
+import * as http from 'http';
+import { Location } from './types';
+
+/**
+ * 位置提供者类
+ * 提供从IP地址和用户输入获取位置的功能
+ */
+export class LocationProvider {
+  private static readonly IPAPI_ENDPOINT = 'https://ipapi.co/json/';
+  private static readonly TIMEOUT = 10000; // 10秒超时
+  // 默认城市作为备用
+  private static readonly DEFAULT_LOCATION: Location = {
+    city: '北京',
+    latitude: 39.9075,
+    longitude: 116.39723,
+    country: '中国',
+    region: '北京市',
+  };
+
+  /**
+   * 通过IP地址自动检测当前位置
+   * @returns 返回位置信息或默认位置（失败时）
+   */
+  static async getLocationFromIP(): Promise<Location | null> {
+    try {
+      console.log('[LocationProvider] 尝试通过IP获取位置...');
+      
+      // 尝试 ipapi.co
+      console.log('[LocationProvider] 请求 ipapi.co...');
+      const data = await this.fetchWithTimeout(this.IPAPI_ENDPOINT, this.TIMEOUT);
+      
+      // 检查是否是有效的位置数据
+      if (data && data.city && data.latitude && data.longitude) {
+        const location: Location = {
+          city: data.city,
+          latitude: typeof data.latitude === 'string' ? parseFloat(data.latitude) : data.latitude,
+          longitude: typeof data.longitude === 'string' ? parseFloat(data.longitude) : data.longitude,
+          country: data.country_name || 'Unknown',
+          region: data.region || '',
+        };
+        console.log(`[LocationProvider] ✓ 成功获取位置: ${location.city}, ${location.country}`);
+        return location;
+      }
+
+      // 如果 ipapi.co 返回错误响应（如被限频）
+      if (data && data.error) {
+        console.warn(`[LocationProvider] ipapi.co 返回错误: ${data.reason || data.message}`);
+      } else {
+        console.warn('[LocationProvider] ipapi.co 响应数据不完整');
+      }
+
+      console.log(`[LocationProvider] IP定位失败，使用默认位置: ${this.DEFAULT_LOCATION.city}`);
+      return this.DEFAULT_LOCATION;
+
+    } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : '未知错误';
+      console.warn(`[LocationProvider] 位置检测异常: ${errorMsg}`);
+      console.log(`[LocationProvider] 使用默认位置: ${this.DEFAULT_LOCATION.city}`);
+      return this.DEFAULT_LOCATION;
+    }
+  }
+
+  /**
+   * 通过用户输入的城市名称获取位置
+   * 使用Open-Meteo的地理编码API
+   * @param cityName 城市名称
+   * @returns 返回位置信息或null（失败时）
+   */
+  static async getLocationFromCity(cityName: string): Promise<Location | null> {
+    try {
+      if (!cityName || cityName.trim().length === 0) {
+        throw new Error('城市名称不能为空');
+      }
+
+      const encodedCity = encodeURIComponent(cityName.trim());
+      const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodedCity}&count=1&language=zh&format=json`;
+
+      const data = await this.fetchWithTimeout(url, this.TIMEOUT);
+
+      if (!data.results || data.results.length === 0) {
+        throw new Error(`未找到城市: ${cityName}`);
+      }
+
+      const result = data.results[0];
+      const location: Location = {
+        city: result.name,
+        latitude: result.latitude,
+        longitude: result.longitude,
+        country: result.country || 'Unknown',
+        region: result.admin1 || '',
+      };
+
+      console.log(`[LocationProvider] 通过城市名检测到位置: ${location.city}, ${location.country}`);
+      return location;
+    } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : '未知错误';
+      console.error(`[LocationProvider] 城市位置检测失败: ${errorMsg}`);
+      return null;
+    }
+  }
+
+  /**
+   * 带超时的HTTP GET请求
+   * @param url 请求URL
+   * @param timeout 超时时间（毫秒）
+   * @returns 响应数据
+   */
+  private static async fetchWithTimeout(url: string, timeout: number): Promise<any> {
+    return new Promise((resolve, reject) => {
+      const timeoutId = setTimeout(() => {
+        reject(new Error('请求超时'));
+      }, timeout);
+
+      // 选择合适的协议处理器
+      const protocol = url.startsWith('https') ? https : http;
+
+      protocol.get(url, (res) => {
+        clearTimeout(timeoutId);
+        let data = '';
+
+        res.on('data', (chunk) => {
+          data += chunk;
+        });
+
+        res.on('end', () => {
+          try {
+            const json = JSON.parse(data);
+            resolve(json);
+          } catch (error) {
+            reject(new Error('响应数据解析失败'));
+          }
+        });
+      }).on('error', (error) => {
+        clearTimeout(timeoutId);
+        reject(error);
+      });
+    });
+  }
+
+  /**
+   * 提示用户输入城市名称
+   * @returns 用户输入的城市名称或null（取消时）
+   */
+  static async promptForCity(): Promise<string | null> {
+    const city = await vscode.window.showInputBox({
+      prompt: '输入城市名称（例如：北京、上海、伦敦）',
+      placeHolder: '城市名称',
+      validateInput: (value) => {
+        if (value.trim().length === 0) {
+          return '城市名称不能为空';
+        }
+        return '';
+      },
+    });
+
+    return city || null;
+  }
+}

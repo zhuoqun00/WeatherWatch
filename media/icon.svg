@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <!-- 云 -->
+  <path d="M 30 70 Q 20 70 15 60 Q 15 50 25 45 Q 30 35 40 35 Q 50 25 60 25 Q 75 25 80 35 Q 90 35 95 45 Q 105 50 105 65 Q 105 80 95 85 L 35 85 Q 25 85 20 75 Q 15 75 15 65 Q 15 55 25 50" 
+        fill="#87CEEB" stroke="#4A90E2" stroke-width="2"/>
+  
+  <!-- 太阳 -->
+  <circle cx="100" cy="45" r="15" fill="#FFD700" stroke="#FFA500" stroke-width="2"/>
+  
+  <!-- 雨滴1 -->
+  <path d="M 45 95 Q 40 105 45 115" stroke="#4A90E2" stroke-width="3" fill="none" stroke-linecap="round"/>
+  
+  <!-- 雨滴2 -->
+  <path d="M 65 95 Q 60 105 65 115" stroke="#4A90E2" stroke-width="3" fill="none" stroke-linecap="round"/>
+  
+  <!-- 雨滴3 -->
+  <path d="M 85 95 Q 80 105 85 115" stroke="#4A90E2" stroke-width="3" fill="none" stroke-linecap="round"/>
+</svg>

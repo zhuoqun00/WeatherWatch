@@ -1,0 +1,154 @@
+{
+  "name": "weatherwatch",
+  "displayName": "WeatherWatch",
+  "description": "在VS Code状态栏实时显示天气信息，支持自动位置检测和多种天气参数 | Real-time weather display in VS Code status bar with auto location detection",
+  "version": "1.0.0",
+  "publisher": "weatherwatch",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.60.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "weather",
+    "天气",
+    "status bar",
+    "location",
+    "meteo",
+    "climate",
+    "forecast"
+  ],
+  "homepage": "https://github.com/zhuoqun-vscode-extensions/vscode-weather",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zhuoqun-vscode-extensions/vscode-weather.git"
+  },
+  "bugs": {
+    "url": "https://github.com/zhuoqun-vscode-extensions/vscode-weather/issues"
+  },
+  "main": "./dist/extension.js",
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "lint": "eslint src --ext ts",
+    "pretest": "npm run compile && npm run lint",
+    "test": "node ./out/test/runTest.js",
+    "package": "vsce package",
+    "publish": "vsce publish"
+  },
+  "devDependencies": {
+    "@types/node": "^18.14.0",
+    "@types/vscode": "^1.60.0",
+    "@typescript-eslint/eslint-plugin": "^5.50.0",
+    "@typescript-eslint/parser": "^5.50.0",
+    "eslint": "^8.33.0",
+    "typescript": "^4.9.5",
+    "vsce": "^2.15.0"
+  },
+  "contributes": {
+    "commands": [
+      {
+        "command": "weather.refreshWeather",
+        "title": "刷新天气",
+        "category": "Weather",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "weather.setLocation",
+        "title": "设置位置",
+        "category": "Weather",
+        "icon": "$(location)"
+      },
+      {
+        "command": "weather.showDetails",
+        "title": "显示天气详情",
+        "category": "Weather",
+        "icon": "$(info)"
+      },
+      {
+        "command": "weather.toggleTemperatureUnit",
+        "title": "切换温度单位",
+        "category": "Weather",
+        "icon": "$(symbol-number)"
+      },
+      {
+        "command": "weather.toggleAutoRefresh",
+        "title": "切换自动刷新",
+        "category": "Weather",
+        "icon": "$(sync)"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "weather.refreshWeather",
+        "key": "ctrl+shift+r",
+        "mac": "cmd+shift+r",
+        "when": "editorTextFocus"
+      }
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "weather.refreshWeather"
+        },
+        {
+          "command": "weather.setLocation"
+        },
+        {
+          "command": "weather.showDetails"
+        },
+        {
+          "command": "weather.toggleTemperatureUnit"
+        },
+        {
+          "command": "weather.toggleAutoRefresh"
+        }
+      ]
+    },
+    "configuration": {
+      "type": "object",
+      "title": "天气",
+      "properties": {
+        "weather.refreshInterval": {
+          "type": "number",
+          "default": 10,
+          "minimum": 1,
+          "maximum": 120,
+          "description": "自动刷新间隔（分钟）"
+        },
+        "weather.temperatureUnit": {
+          "type": "string",
+          "default": "C",
+          "enum": [
+            "C",
+            "F"
+          ],
+          "enumDescriptions": [
+            "摄氏度",
+            "华氏度"
+          ],
+          "description": "温度显示单位"
+        },
+        "weather.city": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null,
+          "description": "手动设置的城市名称（设置此选项可覆盖自动IP定位）"
+        },
+        "weather.autoRefresh": {
+          "type": "boolean",
+          "default": true,
+          "description": "是否启用自动刷新天气信息"
+        }
+      }
+    }
+  }
+}
