@@ -75,3 +75,42 @@ export interface CachedWeather {
   timestamp: number;
   expiresAt: number;
 }
+
+/**
+ * 使用统计 - 单一会话
+ */
+export interface UsageSession {
+  startTime: number; // 会话开始时间戳
+  endTime?: number; // 会话结束时间戳（可选，进行中为undefined）
+  location: Location; // 该会话的位置信息
+  weather: string; // 该会话的天气描述（如"晴朗"、"多云"等）
+  durationMinutes: number; // 会话时长（分钟）
+}
+
+/**
+ * 使用统计 - 汇总数据
+ */
+export interface UsageStats {
+  totalMinutes: number; // 总使用时长（分钟）
+  lastUpdated: number; // 最后更新时间戳
+  sessions: UsageSession[]; // 所有会话记录
+  locationStats: Record<string, number>; // 位置名称 => 使用分钟数
+  weatherStats: Record<string, number>; // 天气类型 => 使用分钟数
+  dailyStats: Record<string, number>; // 日期(yyyy-MM-dd) => 使用分钟数
+}
+
+/**
+ * 时间范围类型
+ */
+export type TimeRange = 'today' | 'week' | 'month' | 'all';
+
+/**
+ * 使用统计结果 - 按时间范围筛选后的数据
+ */
+export interface UsageStatsResult {
+  timeRange: TimeRange;
+  totalMinutes: number;
+  locationStats: { location: string; minutes: number }[]; // 排序后的位置统计
+  weatherStats: { weather: string; minutes: number }[]; // 排序后的天气统计
+  dailyBreakdown: { date: string; minutes: number }[]; // 按日期排序的时长分布
+}

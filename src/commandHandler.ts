@@ -9,6 +9,8 @@ import { WeatherProvider } from './weatherProvider';
 import { StatusBarUI } from './statusBarUI';
 import { ConfigManager } from './config';
 import { Location, WeatherInfo } from './types';
+import { UsageManager } from './usageManager';
+import { UsagePanel } from './usagePanel';
 
 /**
  * 命令处理器类
@@ -16,12 +18,17 @@ import { Location, WeatherInfo } from './types';
  */
 export class CommandHandler {
   private statusBarUI: StatusBarUI;
+  private usageManager: UsageManager;
+  private usagePanel: UsagePanel;
   private refreshTimer: NodeJS.Timeout | null = null;
+  private windowStateListener: vscode.Disposable | null = null;
   private currentLocation: Location | null = null;
   private currentWeather: WeatherInfo | null = null;
 
-  constructor(statusBarUI: StatusBarUI) {
+  constructor(statusBarUI: StatusBarUI, usageManager: UsageManager, usagePanel: UsagePanel) {
     this.statusBarUI = statusBarUI;
+    this.usageManager = usageManager;
+    this.usagePanel = usagePanel;
   }
 
   /**
@@ -73,6 +80,20 @@ export class CommandHandler {
       )
     );
 
+    // 显示使用统计命令
+    disposables.push(
+      vscode.commands.registerCommand('weather.showUsageStats', () =>
+        this.handleShowUsageStats()
+      )
+    );
+
+    // 重置使用统计命令
+    disposables.push(
+      vscode.commands.registerCommand('weather.resetUsageStats', () =>
+        this.handleResetUsageStats()
+      )
+    );
+
     console.log('[CommandHandler] 所有命令已注册');
     return disposables;
   }
@@ -106,11 +127,19 @@ export class CommandHandler {
       // 获取天气信息
       await this.fetchAndUpdateWeather();
 
+      // 开始使用时长统计会话
+      if (this.currentWeather) {
+        this.usageManager.startSession(this.currentLocation, this.currentWeather.description);
+      }
+
       // 设置自动刷新
       this.setupAutoRefresh();
 
       // 监听配置变更
       this.setupConfigListener();
+
+      // 设置窗口焦点监听
+      this.setupWindowFocusListener();
 
       console.log('[CommandHandler] 初始化完成');
     } catch (error) {
@@ -279,6 +308,9 @@ export class CommandHandler {
     // 更新状态栏显示
     const unit = ConfigManager.getTemperatureUnit();
     this.statusBarUI.updateWeather(weather, unit);
+
+    // 更新使用统计会话信息
+    this.usageManager.updateCurrentSession(this.currentLocation, weather.description);
   }
 
   /**
@@ -327,11 +359,71 @@ export class CommandHandler {
   }
 
   /**
+   * 监听窗口焦点变化
+   * 窗口获得焦点时恢复计时，失去焦点时暂停
+   */
+  private setupWindowFocusListener(): void {
+    this.windowStateListener = vscode.window.onDidChangeWindowState((event) => {
+      if (event.focused) {
+        console.log('[CommandHandler] VS Code窗口获得焦点，恢复计时');
+        this.usageManager.resumeSession();
+      } else {
+        console.log('[CommandHandler] VS Code窗口失去焦点，暂停计时');
+        this.usageManager.pauseSession();
+      }
+    });
+  }
+
+  /**
+   * 处理显示使用统计命令
+   */
+  private handleShowUsageStats(): void {
+    console.log('[CommandHandler] 执行显示使用统计命令');
+    // 此命令将由UsagePanel处理，这里只是注册入口
+    vscode.commands.executeCommand('usageStats.openPanel');
+  }
+
+  /**
+   * 处理重置使用统计命令
+   */
+  private async handleResetUsageStats(): Promise<void> {
+    console.log('[CommandHandler] 执行重置使用统计命令');
+    
+    const confirmed = await vscode.window.showWarningMessage(
+      '确定要清空所有使用统计数据吗？此操作无法撤销。',
+      { modal: true },
+      '清空数据'
+    );
+    
+    if (confirmed === '清空数据') {
+      try {
+        await this.usageManager.resetStats();
+        vscode.window.showInformationMessage('✓ 使用统计数据已成功清空！');
+        console.log('[CommandHandler] 使用统计数据重置成功');
+        
+        // 刷新使用统计面板的数据（如果面板已打开）
+        this.usagePanel.refreshData();
+      } catch (error) {
+        const errorMsg = error instanceof Error ? error.message : '未知错误';
+        vscode.window.showErrorMessage(`清空统计数据失败: ${errorMsg}`);
+        console.error('[CommandHandler] 重置统计数据失败:', errorMsg);
+      }
+    }
+  }
+
+  /**
    * 清理资源
    */
   dispose(): void {
+    // 结束使用统计会话
+    this.usageManager.endSession();
+
     if (this.refreshTimer) {
       clearInterval(this.refreshTimer);
+    }
+
+    if (this.windowStateListener) {
+      this.windowStateListener.dispose();
     }
   }
 }

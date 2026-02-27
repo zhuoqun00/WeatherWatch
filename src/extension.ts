@@ -6,10 +6,14 @@
 import * as vscode from 'vscode';
 import { StatusBarUI } from './statusBarUI';
 import { CommandHandler } from './commandHandler';
+import { UsageManager } from './usageManager';
+import { UsagePanel } from './usagePanel';
 
 // 全局变量，保持对象引用以避免垃圾回收
 let statusBarUI: StatusBarUI;
 let commandHandler: CommandHandler;
+let usageManager: UsageManager;
+let usagePanel: UsagePanel;
 let disposables: vscode.Disposable[] = [];
 
 /**
@@ -25,8 +29,16 @@ export function activate(context: vscode.ExtensionContext) {
     statusBarUI = new StatusBarUI();
     console.log('✓ StatusBarUI 初始化成功');
 
-    // 初始化命令处理器
-    commandHandler = new CommandHandler(statusBarUI);
+    // 初始化使用统计管理器
+    usageManager = new UsageManager(context);
+    console.log('✓ UsageManager 初始化成功');
+
+    // 初始化使用统计面板
+    usagePanel = new UsagePanel(context, usageManager);
+    console.log('✓ UsagePanel 初始化成功');
+
+    // 初始化命令处理器（需要usagePanel的引用）
+    commandHandler = new CommandHandler(statusBarUI, usageManager, usagePanel);
     console.log('✓ CommandHandler 初始化成功');
 
     // 注册所有命令
@@ -47,6 +59,7 @@ export function activate(context: vscode.ExtensionContext) {
 
     // 将UI对象添加到上下文的清理列表
     context.subscriptions.push(statusBarUI);
+    context.subscriptions.push(usagePanel);
 
     console.log('✓ 天气插件初始化完成');
   } catch (error) {
@@ -66,6 +79,16 @@ export function deactivate() {
     // 清理命令处理器
     if (commandHandler) {
       commandHandler.dispose();
+    }
+
+    // 清理使用统计管理器
+    if (usageManager) {
+      usageManager.dispose();
+    }
+
+    // 清理使用统计面板
+    if (usagePanel) {
+      usagePanel.dispose();
     }
 
     // 清理UI
