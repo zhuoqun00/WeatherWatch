@@ -66,6 +66,13 @@ export class CommandHandler {
       )
     );
 
+    // 刷新位置命令
+    disposables.push(
+      vscode.commands.registerCommand('weather.refreshLocation', () =>
+        this.handleRefreshLocation()
+      )
+    );
+
     console.log('[CommandHandler] 所有命令已注册');
     return disposables;
   }
@@ -79,17 +86,17 @@ export class CommandHandler {
       console.log('[CommandHandler] 开始初始化...');
       this.statusBarUI.showLoading();
 
-      // 尝试从配置中读取手动设置的城市
-      const configCity = ConfigManager.getCity();
-      if (configCity) {
-        console.log(`[CommandHandler] 使用配置中的城市: ${configCity}`);
-        this.currentLocation = await LocationProvider.getLocationFromCity(configCity);
-      }
+      // 首先尝试通过IP自动检测位置
+      console.log('[CommandHandler] 尝试自动检测位置...');
+      this.currentLocation = await LocationProvider.getLocationFromIP();
 
-      // 如果没有配置城市，则进行IP定位
+      // 如果自动检测失败，尝试使用配置中的城市
       if (!this.currentLocation) {
-        console.log('[CommandHandler] 通过IP获取位置...');
-        this.currentLocation = await LocationProvider.getLocationFromIP();
+        const configCity = ConfigManager.getCity();
+        if (configCity) {
+          console.log(`[CommandHandler] 自动检测失败，使用配置中的城市: ${configCity}`);
+          this.currentLocation = await LocationProvider.getLocationFromCity(configCity);
+        }
       }
 
       if (!this.currentLocation) {
@@ -111,6 +118,43 @@ export class CommandHandler {
       console.error(`[CommandHandler] 初始化失败: ${errorMsg}`);
       this.statusBarUI.showError(`初始化失败: ${errorMsg}`);
       vscode.window.showErrorMessage(`天气插件初始化失败: ${errorMsg}`);
+    }
+  }
+
+  /**
+   * 处理刷新位置命令
+   * 重新自动检测当前位置
+   */
+  private async handleRefreshLocation(): Promise<void> {
+    try {
+      console.log('[CommandHandler] 执行刷新位置命令');
+      this.statusBarUI.showLoading();
+
+      // 自动检测新位置
+      const newLocation = await LocationProvider.getLocationFromIP();
+      if (!newLocation) {
+        throw new Error('无法检测位置');
+      }
+
+      this.currentLocation = newLocation;
+
+      // 清除配置中的手动城市设置（因为使用了自动检测）
+      await ConfigManager.setCity('');
+
+      // 获取新位置的天气信息
+      await this.fetchAndUpdateWeather();
+
+      vscode.window.showInformationMessage(
+        `位置已更新为: ${newLocation.city}, ${newLocation.country}`
+      );
+      console.log(
+        `[CommandHandler] 位置已更新: ${newLocation.city}, ${newLocation.country}`
+      );
+    } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : '未知错误';
+      console.error(`[CommandHandler] 刷新位置失败: ${errorMsg}`);
+      this.statusBarUI.showError(errorMsg);
+      vscode.window.showErrorMessage(`刷新位置失败: ${errorMsg}`);
     }
   }
 

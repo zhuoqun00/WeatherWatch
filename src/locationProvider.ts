@@ -13,8 +13,76 @@ import { Location } from './types';
  * 提供从IP地址和用户输入获取位置的功能
  */
 export class LocationProvider {
-  private static readonly IPAPI_ENDPOINT = 'https://ipapi.co/json/';
-  private static readonly TIMEOUT = 10000; // 10秒超时
+  // 多个位置检测API，按优先级排列
+  private static readonly LOCATION_APIS = [
+    {
+      name: 'ip-api.com',
+      url: 'http://ip-api.com/json/',
+      parser: (data: any) => {
+        if (data.status === 'success' && data.city && data.lat && data.lon) {
+          return {
+            city: data.city,
+            latitude: data.lat,
+            longitude: data.lon,
+            country: data.country,
+            region: data.regionName,
+          };
+        }
+        return null;
+      }
+    },
+    {
+      name: 'ipapi.co',
+      url: 'https://ipapi.co/json/',
+      parser: (data: any) => {
+        if (data.city && data.latitude && data.longitude) {
+          return {
+            city: data.city,
+            latitude: typeof data.latitude === 'string' ? parseFloat(data.latitude) : data.latitude,
+            longitude: typeof data.longitude === 'string' ? parseFloat(data.longitude) : data.longitude,
+            country: data.country_name || 'Unknown',
+            region: data.region || '',
+          };
+        }
+        return null;
+      }
+    },
+    {
+      name: 'ipinfo.io',
+      url: 'https://ipinfo.io/json?token=b42d6436b65ea5',
+      parser: (data: any) => {
+        if (data.city && data.loc) {
+          const [lat, lon] = data.loc.split(',').map((v: string) => parseFloat(v));
+          return {
+            city: data.city,
+            latitude: lat,
+            longitude: lon,
+            country: data.country,
+            region: data.region,
+          };
+        }
+        return null;
+      }
+    },
+    {
+      name: 'geoip-db.com',
+      url: 'https://geoip-db.com/json',
+      parser: (data: any) => {
+        if (data.city && data.latitude && data.longitude) {
+          return {
+            city: data.city,
+            latitude: data.latitude,
+            longitude: data.longitude,
+            country: data.country_name,
+            region: data.state,
+          };
+        }
+        return null;
+      }
+    },
+  ];
+
+  private static readonly TIMEOUT = 5000; // 5秒超时
   // 默认城市作为备用
   private static readonly DEFAULT_LOCATION: Location = {
     city: '北京',
@@ -26,37 +94,42 @@ export class LocationProvider {
 
   /**
    * 通过IP地址自动检测当前位置
+   * 支持多个API，按优先级轮流尝试
    * @returns 返回位置信息或默认位置（失败时）
    */
   static async getLocationFromIP(): Promise<Location | null> {
     try {
       console.log('[LocationProvider] 尝试通过IP获取位置...');
       
-      // 尝试 ipapi.co
-      console.log('[LocationProvider] 请求 ipapi.co...');
-      const data = await this.fetchWithTimeout(this.IPAPI_ENDPOINT, this.TIMEOUT);
-      
-      // 检查是否是有效的位置数据
-      if (data && data.city && data.latitude && data.longitude) {
-        const location: Location = {
-          city: data.city,
-          latitude: typeof data.latitude === 'string' ? parseFloat(data.latitude) : data.latitude,
-          longitude: typeof data.longitude === 'string' ? parseFloat(data.longitude) : data.longitude,
-          country: data.country_name || 'Unknown',
-          region: data.region || '',
-        };
-        console.log(`[LocationProvider] ✓ 成功获取位置: ${location.city}, ${location.country}`);
-        return location;
+      // 轮流尝试各个API
+      for (const api of this.LOCATION_APIS) {
+        try {
+          console.log(`[LocationProvider] 尝试 ${api.name}...`);
+          const data = await this.fetchWithTimeout(api.url, this.TIMEOUT);
+          
+          // 使用API特定的解析器提取位置信息
+          const locationData = api.parser(data);
+          if (locationData) {
+            const location: Location = {
+              city: locationData.city,
+              latitude: locationData.latitude,
+              longitude: locationData.longitude,
+              country: locationData.country,
+              region: locationData.region,
+            };
+            console.log(`[LocationProvider] ✓ ${api.name} 成功获取位置: ${location.city}, ${location.country}`);
+            return location;
+          }
+        } catch (error) {
+          const errorMsg = error instanceof Error ? error.message : '未知错误';
+          console.warn(`[LocationProvider] ${api.name} 失败: ${errorMsg}，尝试下一个API...`);
+          continue;
+        }
       }
 
-      // 如果 ipapi.co 返回错误响应（如被限频）
-      if (data && data.error) {
-        console.warn(`[LocationProvider] ipapi.co 返回错误: ${data.reason || data.message}`);
-      } else {
-        console.warn('[LocationProvider] ipapi.co 响应数据不完整');
-      }
-
-      console.log(`[LocationProvider] IP定位失败，使用默认位置: ${this.DEFAULT_LOCATION.city}`);
+      // 所有API都失败，使用默认位置
+      console.warn('[LocationProvider] 所有位置检测API都失败，使用默认位置');
+      console.log(`[LocationProvider] 使用默认位置: ${this.DEFAULT_LOCATION.city}`);
       return this.DEFAULT_LOCATION;
 
     } catch (error) {

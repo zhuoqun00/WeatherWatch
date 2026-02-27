@@ -35,3 +35,6 @@ coverage
 # temp files
 *.tmp
 *.temp
+
+# extension package
+*.vsix
