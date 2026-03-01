@@ -8,6 +8,7 @@ import { StatusBarUI } from './statusBarUI';
 import { CommandHandler } from './commandHandler';
 import { UsageManager } from './usageManager';
 import { UsagePanel } from './usagePanel';
+import { initI18n, getI18n } from './i18n/i18nManager';
 
 // 全局变量，保持对象引用以避免垃圾回收
 let statusBarUI: StatusBarUI;
@@ -25,6 +26,10 @@ export function activate(context: vscode.ExtensionContext) {
   console.log(`插件存储路径: ${context.extensionPath}`);
 
   try {
+    // 初始化 i18n（必须最先初始化）
+    const i18n = initI18n(context.extensionUri);
+    console.log(`✓ I18nManager 初始化成功，当前语言: ${i18n.getCurrentLanguage()}`);
+
     // 初始化UI
     statusBarUI = new StatusBarUI();
     console.log('✓ StatusBarUI 初始化成功');
@@ -94,6 +99,14 @@ export function deactivate() {
     // 清理UI
     if (statusBarUI) {
       statusBarUI.dispose();
+    }
+
+    // 清理 i18n
+    try {
+      const i18n = getI18n();
+      i18n.dispose();
+    } catch (error) {
+      // i18n 不可用时忽略
     }
 
     // 清理disposables

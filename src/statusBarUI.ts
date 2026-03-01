@@ -6,6 +6,7 @@
 import * as vscode from 'vscode';
 import { WeatherInfo } from './types';
 import { WeatherProvider } from './weatherProvider';
+import { getI18n } from './i18n/i18nManager';
 
 /**
  * 状态栏UI管理器
@@ -22,7 +23,8 @@ export class StatusBarUI {
       vscode.StatusBarAlignment.Right,
       100
     );
-    this.statusBarItem.name = '天气信息';
+    const i18n = getI18n();
+    this.statusBarItem.name = i18n.t('ui.statusBar.name');
     this.statusBarItem.command = 'weather.showDetails';
     console.log('✓ 状态栏项已创建');
   }
@@ -56,6 +58,7 @@ export class StatusBarUI {
    * @returns 提示信息
    */
   private buildTooltip(weather: WeatherInfo): vscode.MarkdownString {
+    const i18n = getI18n();
     const markdown = new vscode.MarkdownString();
     markdown.supportHtml = true;
 
@@ -63,41 +66,42 @@ export class StatusBarUI {
     const tempC = WeatherProvider.formatTemperature(weather.temperature, 'C');
     const feelsLikeC = WeatherProvider.formatTemperature(weather.feelsLike, 'C');
     const feelsLikeF = WeatherProvider.formatTemperature(weather.feelsLike, 'F');
-    const sunriseTime = new Date(weather.sunrise).toLocaleTimeString('zh-CN', {
+    const locale = i18n.getLocale();
+    const sunriseTime = new Date(weather.sunrise).toLocaleTimeString(locale, {
       hour: '2-digit',
       minute: '2-digit',
     });
-    const sunsetTime = new Date(weather.sunset).toLocaleTimeString('zh-CN', {
+    const sunsetTime = new Date(weather.sunset).toLocaleTimeString(locale, {
       hour: '2-digit',
       minute: '2-digit',
     });
 
-    markdown.appendMarkdown(`# ${weather.location.city} 的天气\n\n`);
-    markdown.appendMarkdown(`**位置**: ${weather.location.city}, ${weather.location.region}, ${weather.location.country}\n\n`);
+    markdown.appendMarkdown(`# ${weather.location.city} ${i18n.t('weather.tooltips.location')}\n\n`);
+    markdown.appendMarkdown(`**${i18n.t('ui.quickPick.location')}**: ${weather.location.city}, ${weather.location.region}, ${weather.location.country}\n\n`);
 
-    markdown.appendMarkdown(`## 当前天气\n\n`);
-    markdown.appendMarkdown(`- **天气**: ${weather.description} ${weather.icon}\n`);
+    markdown.appendMarkdown(`## ${i18n.t('ui.quickPick.currentWeather')}\n\n`);
+    markdown.appendMarkdown(`- **${i18n.t('weather.tooltips.weather')}**: ${weather.description} ${weather.icon}\n`);
     markdown.appendMarkdown(
-      `- **温度**: ${tempC} / ${tempF} (体感: ${feelsLikeC} / ${feelsLikeF})\n`
+      `- **${i18n.t('weather.tooltips.temperature')}**: ${tempC} / ${tempF} (${i18n.t('weather.tooltips.feelsLike')}: ${feelsLikeC} / ${feelsLikeF})\n`
     );
-    markdown.appendMarkdown(`- **最高/最低**: ${weather.temperatureMax.toFixed(1)}°C / ${weather.temperatureMin.toFixed(1)}°C\n`);
+    markdown.appendMarkdown(`- **${i18n.t('weather.tooltips.maxMin')}**: ${weather.temperatureMax.toFixed(1)}°C / ${weather.temperatureMin.toFixed(1)}°C\n`);
 
-    markdown.appendMarkdown(`## 气象数据\n\n`);
-    markdown.appendMarkdown(`- **湿度**: ${weather.humidity}%\n`);
-    markdown.appendMarkdown(`- **风速**: ${weather.windSpeed.toFixed(1)} km/h\n`);
-    markdown.appendMarkdown(`- **阵风**: ${weather.windGust.toFixed(1)} km/h\n`);
-    markdown.appendMarkdown(`- **风向**: ${this.getWindDirection(weather.windDirection)}\n`);
-    markdown.appendMarkdown(`- **能见度**: ${weather.visibility.toFixed(1)} km\n`);
-    markdown.appendMarkdown(`- **气压**: ${weather.pressure.toFixed(1)} hPa\n`);
-    markdown.appendMarkdown(`- **紫外线指数**: ${weather.uvIndex.toFixed(1)}\n`);
-    markdown.appendMarkdown(`- **云量**: ${weather.cloudCover}%\n`);
-    markdown.appendMarkdown(`- **降水**: ${weather.precipitation.toFixed(1)} mm\n`);
+    markdown.appendMarkdown(`## ${i18n.t('usagePanel.title')}\n\n`);
+    markdown.appendMarkdown(`- **${i18n.t('ui.quickPick.humidity')}**: ${weather.humidity}%\n`);
+    markdown.appendMarkdown(`- **${i18n.t('ui.quickPick.windSpeed')}**: ${weather.windSpeed.toFixed(1)} km/h\n`);
+    markdown.appendMarkdown(`- **${i18n.t('weather.tooltips.windGust')}**: ${weather.windGust.toFixed(1)} km/h\n`);
+    markdown.appendMarkdown(`- **${i18n.t('weather.tooltips.windDirection')}**: ${this.getWindDirection(weather.windDirection)}\n`);
+    markdown.appendMarkdown(`- **${i18n.t('ui.quickPick.visibility')}**: ${weather.visibility.toFixed(1)} km\n`);
+    markdown.appendMarkdown(`- **${i18n.t('weather.tooltips.pressure')}**: ${weather.pressure.toFixed(1)} hPa\n`);
+    markdown.appendMarkdown(`- **${i18n.t('ui.quickPick.uvIndex')}**: ${weather.uvIndex.toFixed(1)}\n`);
+    markdown.appendMarkdown(`- **${i18n.t('weather.tooltips.cloudCover')}**: ${weather.cloudCover}%\n`);
+    markdown.appendMarkdown(`- **${i18n.t('weather.tooltips.precipitation')}**: ${weather.precipitation.toFixed(1)} mm\n`);
 
-    markdown.appendMarkdown(`## 日出日落\n\n`);
-    markdown.appendMarkdown(`- **日出**: ${sunriseTime}\n`);
-    markdown.appendMarkdown(`- **日落**: ${sunsetTime}\n`);
+    markdown.appendMarkdown(`## ${i18n.t('weather.tooltips.sunriseSunset')}\n\n`);
+    markdown.appendMarkdown(`- **${i18n.t('weather.tooltips.sunrise')}**: ${sunriseTime}\n`);
+    markdown.appendMarkdown(`- **${i18n.t('weather.tooltips.sunset')}**: ${sunsetTime}\n`);
 
-    markdown.appendMarkdown(`\n*更新时间: ${new Date(weather.timestamp).toLocaleTimeString('zh-CN')}*\n`);
+    markdown.appendMarkdown(`\n*${i18n.t('weather.tooltips.updateTime')}: ${new Date(weather.timestamp).toLocaleTimeString(locale)}*\n`);
 
     return markdown;
   }
@@ -108,8 +112,25 @@ export class StatusBarUI {
    * @returns 风向文字
    */
   private getWindDirection(direction: number): string {
-    const directions = ['北', '北东北', '东北', '东东北', '东', '东东南', '东南', '南东南',
-                        '南', '南西南', '西南', '西西南', '西', '西西北', '西北', '北西北'];
+    const i18n = getI18n();
+    const directions = [
+      i18n.t('weather.windDirections.N'),
+      i18n.t('weather.windDirections.NNE'),
+      i18n.t('weather.windDirections.NE'),
+      i18n.t('weather.windDirections.ENE'),
+      i18n.t('weather.windDirections.E'),
+      i18n.t('weather.windDirections.ESE'),
+      i18n.t('weather.windDirections.SE'),
+      i18n.t('weather.windDirections.SSE'),
+      i18n.t('weather.windDirections.S'),
+      i18n.t('weather.windDirections.SSW'),
+      i18n.t('weather.windDirections.SW'),
+      i18n.t('weather.windDirections.WSW'),
+      i18n.t('weather.windDirections.W'),
+      i18n.t('weather.windDirections.WNW'),
+      i18n.t('weather.windDirections.NW'),
+      i18n.t('weather.windDirections.NNW'),
+    ];
     const index = Math.round((direction % 360) / 22.5) % 16;
     return directions[index];
   }
@@ -118,46 +139,47 @@ export class StatusBarUI {
    * 显示详细天气信息面板
    */
   async showDetailsPanel(): Promise<void> {
+    const i18n = getI18n();
     if (!this.currentWeather) {
-      vscode.window.showInformationMessage('暂无天气数据，请先刷新');
+      vscode.window.showInformationMessage(i18n.t('ui.webview.noData'));
       return;
     }
 
     const weather = this.currentWeather;
     const options: vscode.QuickPickItem[] = [
       {
-        label: `📍 位置: ${weather.location.city}, ${weather.location.country}`,
+        label: `📍 ${i18n.t('ui.quickPick.location')}: ${weather.location.city}, ${weather.location.country}`,
         description: `${weather.location.latitude.toFixed(2)}°, ${weather.location.longitude.toFixed(2)}°`,
       },
       {
-        label: `${weather.icon} 当前天气: ${weather.description}`,
-        description: `温度 ${WeatherProvider.formatTemperature(weather.temperature, this.temperatureUnit)}`,
+        label: `${weather.icon} ${i18n.t('ui.quickPick.currentWeather')}: ${weather.description}`,
+        description: `${i18n.t('weather.tooltips.temperature')} ${WeatherProvider.formatTemperature(weather.temperature, this.temperatureUnit)}`,
       },
       {
-        label: `🌡️ 温度范围`,
+        label: `🌡️ ${i18n.t('ui.quickPick.temperatureRange')}`,
         description: `${weather.temperatureMax.toFixed(1)}°C ~ ${weather.temperatureMin.toFixed(1)}°C`,
       },
       {
-        label: `💧 湿度: ${weather.humidity}%`,
-        description: `体感温度: ${WeatherProvider.formatTemperature(weather.feelsLike, this.temperatureUnit)}`,
+        label: `💧 ${i18n.t('ui.quickPick.humidity')}: ${weather.humidity}%`,
+        description: `${i18n.t('weather.tooltips.feelsLike')}: ${WeatherProvider.formatTemperature(weather.feelsLike, this.temperatureUnit)}`,
       },
       {
-        label: `💨 风速: ${weather.windSpeed.toFixed(1)} km/h`,
-        description: `阵风: ${weather.windGust.toFixed(1)} km/h`,
+        label: `💨 ${i18n.t('ui.quickPick.windSpeed')}: ${weather.windSpeed.toFixed(1)} km/h`,
+        description: `${i18n.t('weather.tooltips.windGust')}: ${weather.windGust.toFixed(1)} km/h`,
       },
       {
-        label: `👁️ 能见度: ${weather.visibility.toFixed(1)} km`,
-        description: `气压: ${weather.pressure.toFixed(1)} hPa`,
+        label: `👁️ ${i18n.t('ui.quickPick.visibility')}: ${weather.visibility.toFixed(1)} km`,
+        description: `${i18n.t('weather.tooltips.pressure')}: ${weather.pressure.toFixed(1)} hPa`,
       },
       {
-        label: `☀️ 紫外线指数: ${weather.uvIndex.toFixed(1)}`,
-        description: `云量: ${weather.cloudCover}%`,
+        label: `☀️ ${i18n.t('ui.quickPick.uvIndex')}: ${weather.uvIndex.toFixed(1)}`,
+        description: `${i18n.t('weather.tooltips.cloudCover')}: ${weather.cloudCover}%`,
       },
     ];
 
     await vscode.window.showQuickPick(options, {
-      title: `${weather.location.city} 详细天气信息`,
-      placeHolder: '查看更多天气详情',
+      title: `${weather.location.city} ${i18n.t('ui.details.detailsPanel')}`,
+      placeHolder: i18n.t('ui.details.detailsPanel'),
       canPickMany: false,
     });
   }
@@ -166,7 +188,8 @@ export class StatusBarUI {
    * 显示加载状态
    */
   showLoading(): void {
-    this.statusBarItem.text = '$(loading~spin) 正在加载天气...';
+    const i18n = getI18n();
+    this.statusBarItem.text = `$(loading~spin) ${i18n.t('ui.statusBar.loading')}`;
     this.statusBarItem.show();
     console.log('⏳ 显示加载状态');
   }
@@ -176,7 +199,8 @@ export class StatusBarUI {
    * @param error 错误信息
    */
   showError(error: string): void {
-    this.statusBarItem.text = '$(error) 天气获取失败';
+    const i18n = getI18n();
+    this.statusBarItem.text = `$(error) ${i18n.t('ui.statusBar.failed')}`;
     this.statusBarItem.tooltip = error;
     this.statusBarItem.show();
     console.error('❌ 错误状态:', error);

@@ -7,6 +7,7 @@ import * as vscode from 'vscode';
 import * as https from 'https';
 import * as http from 'http';
 import { Location } from './types';
+import { getI18n } from './i18n/i18nManager';
 
 /**
  * 位置提供者类
@@ -148,17 +149,19 @@ export class LocationProvider {
    */
   static async getLocationFromCity(cityName: string): Promise<Location | null> {
     try {
+      const i18n = getI18n();
       if (!cityName || cityName.trim().length === 0) {
-        throw new Error('城市名称不能为空');
+        throw new Error(i18n.t('messages.error.emptyCity'));
       }
 
       const encodedCity = encodeURIComponent(cityName.trim());
-      const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodedCity}&count=1&language=zh&format=json`;
+      const locale = i18n.getLocale();
+      const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodedCity}&count=1&language=${locale === 'zh-CN' ? 'zh' : 'en'}&format=json`;
 
       const data = await this.fetchWithTimeout(url, this.TIMEOUT);
 
       if (!data.results || data.results.length === 0) {
-        throw new Error(`未找到城市: ${cityName}`);
+        throw new Error(i18n.tWithParams('messages.error.cityNotFound', { city: cityName }));
       }
 
       const result = data.results[0];
@@ -222,12 +225,15 @@ export class LocationProvider {
    * @returns 用户输入的城市名称或null（取消时）
    */
   static async promptForCity(): Promise<string | null> {
+    const i18n = getI18n();
     const city = await vscode.window.showInputBox({
-      prompt: '输入城市名称（例如：北京、上海、伦敦）',
-      placeHolder: '城市名称',
+      prompt: i18n.getCurrentLanguage() === 'zh-CN' 
+        ? '输入城市名称（例如：北京、上海、伦敦）'
+        : 'Enter city name (e.g. Beijing, London)',
+      placeHolder: i18n.t('usagePanel.table.location'),
       validateInput: (value) => {
         if (value.trim().length === 0) {
-          return '城市名称不能为空';
+          return i18n.t('messages.error.emptyCity');
         }
         return '';
       },

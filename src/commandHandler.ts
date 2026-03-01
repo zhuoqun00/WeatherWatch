@@ -11,6 +11,7 @@ import { ConfigManager } from './config';
 import { Location, WeatherInfo } from './types';
 import { UsageManager } from './usageManager';
 import { UsagePanel } from './usagePanel';
+import { getI18n } from './i18n/i18nManager';
 
 /**
  * 命令处理器类
@@ -121,7 +122,8 @@ export class CommandHandler {
       }
 
       if (!this.currentLocation) {
-        throw new Error('无法获取位置信息');
+        const i18n = getI18n();
+        throw new Error(i18n.t('messages.error.cannotGetLocation'));
       }
 
       // 获取天气信息
@@ -159,10 +161,10 @@ export class CommandHandler {
       console.log('[CommandHandler] 执行刷新位置命令');
       this.statusBarUI.showLoading();
 
-      // 自动检测新位置
       const newLocation = await LocationProvider.getLocationFromIP();
       if (!newLocation) {
-        throw new Error('无法检测位置');
+        const i18n = getI18n();
+        throw new Error(i18n.t('messages.error.cannotDetectLocation'));
       }
 
       this.currentLocation = newLocation;
@@ -173,8 +175,9 @@ export class CommandHandler {
       // 获取新位置的天气信息
       await this.fetchAndUpdateWeather();
 
+      const i18n = getI18n();
       vscode.window.showInformationMessage(
-        `位置已更新为: ${newLocation.city}, ${newLocation.country}`
+        `${i18n.t('messages.success.locationUpdated')} ${newLocation.city}, ${newLocation.country}`
       );
       console.log(
         `[CommandHandler] 位置已更新: ${newLocation.city}, ${newLocation.country}`
@@ -196,16 +199,19 @@ export class CommandHandler {
       this.statusBarUI.showLoading();
 
       if (!this.currentLocation) {
-        throw new Error('位置信息不可用');
+        const i18n = getI18n();
+        throw new Error(i18n.t('messages.error.locationUnavailable'));
       }
 
       await this.fetchAndUpdateWeather();
-      vscode.window.showInformationMessage('天气信息已更新');
+      const i18n = getI18n();
+      vscode.window.showInformationMessage(i18n.t('messages.success.weatherUpdated'));
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : '未知错误';
+      const i18n = getI18n();
       console.error(`[CommandHandler] 刷新失败: ${errorMsg}`);
       this.statusBarUI.showError(errorMsg);
-      vscode.window.showErrorMessage(`刷新天气失败: ${errorMsg}`);
+      vscode.window.showErrorMessage(`${i18n.t('messages.error.refreshFailed')}: ${errorMsg}`);
     }
   }
 
@@ -226,7 +232,8 @@ export class CommandHandler {
       // 获取位置
       const location = await LocationProvider.getLocationFromCity(city);
       if (!location) {
-        throw new Error(`无法找到城市: ${city}`);
+        const i18n = getI18n();
+        throw new Error(i18n.tWithParams('messages.error.cannotFindCity', { city }));
       }
 
       this.currentLocation = location;
@@ -237,13 +244,15 @@ export class CommandHandler {
       // 获取天气信息
       await this.fetchAndUpdateWeather();
 
-      vscode.window.showInformationMessage(`位置已设置为: ${location.city}`);
+      const i18n = getI18n();
+      vscode.window.showInformationMessage(`${i18n.t('messages.success.locationSet')} ${location.city}`);
       console.log(`[CommandHandler] 位置已更新: ${location.city}`);
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : '未知错误';
+      const i18n = getI18n();
       console.error(`[CommandHandler] 设置位置失败: ${errorMsg}`);
       this.statusBarUI.showError(errorMsg);
-      vscode.window.showErrorMessage(`设置位置失败: ${errorMsg}`);
+      vscode.window.showErrorMessage(`${i18n.t('messages.error.setLocationFailed')}: ${errorMsg}`);
     }
   }
 
@@ -264,12 +273,14 @@ export class CommandHandler {
         this.statusBarUI.updateWeather(this.currentWeather, newUnit);
       }
 
-      vscode.window.showInformationMessage(`温度单位已切换为: °${newUnit}`);
+      const i18n = getI18n();
+      vscode.window.showInformationMessage(`${i18n.t('messages.success.temperatureUnitToggled')} °${newUnit}`);
       console.log(`[CommandHandler] 温度单位已切换: ${newUnit}`);
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : '未知错误';
+      const i18n = getI18n();
       console.error(`[CommandHandler] 切换单位失败: ${errorMsg}`);
-      vscode.window.showErrorMessage(`切换温度单位失败: ${errorMsg}`);
+      vscode.window.showErrorMessage(`${i18n.t('messages.error.toggleUnitFailed')}: ${errorMsg}`);
     }
   }
 
@@ -284,13 +295,15 @@ export class CommandHandler {
       const config = vscode.workspace.getConfiguration('weather');
       await config.update('autoRefresh', !isEnabled, vscode.ConfigurationTarget.Global);
 
-      const status = !isEnabled ? '已启用' : '已禁用';
-      vscode.window.showInformationMessage(`自动刷新${status}`);
-      console.log(`[CommandHandler] 自动刷新${status}`);
+      const i18n = getI18n();
+      const status = !isEnabled ? i18n.t('messages.success.autoRefreshEnabled') : i18n.t('messages.success.autoRefreshDisabled');
+      vscode.window.showInformationMessage(status);
+      console.log(`[CommandHandler] ${status}`);
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : '未知错误';
+      const i18n = getI18n();
       console.error(`[CommandHandler] 切换自动刷新失败: ${errorMsg}`);
-      vscode.window.showErrorMessage(`切换自动刷新失败: ${errorMsg}`);
+      vscode.window.showErrorMessage(`${i18n.t('messages.error.toggleAutoRefreshFailed')}: ${errorMsg}`);
     }
   }
 
@@ -389,23 +402,25 @@ export class CommandHandler {
   private async handleResetUsageStats(): Promise<void> {
     console.log('[CommandHandler] 执行重置使用统计命令');
     
+    const i18n = getI18n();
     const confirmed = await vscode.window.showWarningMessage(
-      '确定要清空所有使用统计数据吗？此操作无法撤销。',
+      i18n.t('messages.warning.resetStatsConfirm'),
       { modal: true },
-      '清空数据'
+      i18n.t('messages.warning.clearData')
     );
     
-    if (confirmed === '清空数据') {
+    if (confirmed === i18n.t('messages.warning.clearData')) {
       try {
         await this.usageManager.resetStats();
-        vscode.window.showInformationMessage('✓ 使用统计数据已成功清空！');
+        vscode.window.showInformationMessage(i18n.t('messages.success.usageStatsReset'));
         console.log('[CommandHandler] 使用统计数据重置成功');
         
         // 刷新使用统计面板的数据（如果面板已打开）
         this.usagePanel.refreshData();
       } catch (error) {
         const errorMsg = error instanceof Error ? error.message : '未知错误';
-        vscode.window.showErrorMessage(`清空统计数据失败: ${errorMsg}`);
+        const i18n = getI18n();
+        vscode.window.showErrorMessage(i18n.tWithParams('messages.error.resetStatsFailed', { error: errorMsg }));
         console.error('[CommandHandler] 重置统计数据失败:', errorMsg);
       }
     }

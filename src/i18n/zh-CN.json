@@ -1,0 +1,180 @@
+{
+  "ui": {
+    "statusBar": {
+      "name": "天气信息",
+      "loading": "正在加载天气...",
+      "failed": "天气获取失败"
+    },
+    "quickPick": {
+      "location": "📍 位置",
+      "currentWeather": "当前天气",
+      "temperatureRange": "🌡️ 温度范围",
+      "humidity": "💧 湿度",
+      "windSpeed": "💨 风速",
+      "visibility": "👁️ 能见度",
+      "uvIndex": "☀️ 紫外线指数"
+    },
+    "details": {
+      "detailsPanel": "详细天气信息"
+    },
+    "webview": {
+      "title": "使用时长统计",
+      "noData": "暂无天气数据，请先刷新"
+    }
+  },
+  "weather": {
+    "descriptions": {
+      "clear": "晴朗",
+      "mostlyClear": "主要晴朗",
+      "partlyCloudy": "部分多云",
+      "overcast": "阴天",
+      "fog": "有雾",
+      "rime": "沉积雾",
+      "drizzleLarge": "毛毛雨",
+      "drizzleModerate": "中等毛毛雨",
+      "drizzleHeavy": "浓毛毛雨",
+      "rainSmall": "小雨",
+      "rainModerate": "中等雨",
+      "rainHeavy": "大雨",
+      "snowSmall": "小雪",
+      "snowModerate": "中雪",
+      "snowHeavy": "大雪",
+      "rainShowerSmall": "阵雨",
+      "rainShowerModerate": "中等阵雨",
+      "rainShowerHeavy": "暴雨",
+      "snowShowerSmall": "小阵雪",
+      "snowShowerHeavy": "大阵雪",
+      "thunderstorm": "雷暴",
+      "thunderstormSmallHail": "小冰雹雷暴",
+      "thunderstormLargeHail": "大冰雹雷暴",
+      "unclear": "模糊不清"
+    },
+    "windDirections": {
+      "N": "北",
+      "NNE": "北东北",
+      "NE": "东北",
+      "ENE": "东东北",
+      "E": "东",
+      "ESE": "东东南",
+      "SE": "东南",
+      "SSE": "南东南",
+      "S": "南",
+      "SSW": "南西南",
+      "SW": "西南",
+      "WSW": "西西南",
+      "W": "西",
+      "WNW": "西北西",
+      "NW": "西北",
+      "NNW": "北西北"
+    },
+    "tooltips": {
+      "location": "的天气",
+      "weather": "天气",
+      "temperature": "温度",
+      "feelsLike": "体感",
+      "maxMin": "最高/最低",
+      "humidity": "湿度",
+      "windSpeed": "风速",
+      "windGust": "阵风",
+      "windDirection": "风向",
+      "visibility": "能见度",
+      "pressure": "气压",
+      "uvIndex": "紫外线指数",
+      "cloudCover": "云量",
+      "precipitation": "降水",
+      "sunriseSunset": "日出日落",
+      "sunrise": "日出",
+      "sunset": "日落",
+      "updateTime": "更新时间"
+    }
+  },
+  "commands": {
+    "titles": {
+      "refresh": "刷新天气",
+      "setLocation": "设置位置",
+      "showDetails": "显示天气详情",
+      "toggleTemperatureUnit": "切换温度单位",
+      "toggleAutoRefresh": "切换自动刷新",
+      "refreshLocation": "刷新位置",
+      "showUsageStats": "显示使用时长统计",
+      "resetUsageStats": "清空使用统计数据"
+    }
+  },
+  "messages": {
+    "success": {
+      "locationUpdated": "位置已更新为:",
+      "temperatureUnitToggled": "温度单位已切换为:",
+      "autoRefreshEnabled": "自动刷新已启用",
+      "autoRefreshDisabled": "自动刷新已禁用",
+      "usageStatsReset": "✓ 使用统计数据已成功清空！",
+      "weatherUpdated": "天气信息已更新",
+      "locationSet": "位置已设置为:"
+    },
+    "error": {
+      "emptyCity": "城市名称不能为空",
+      "cityNotFound": "未找到城市",
+      "locationUnavailable": "位置信息不可用",
+      "cannotDetectLocation": "无法检测位置",
+      "cannotGetLocation": "无法获取位置信息",
+      "initializationFailed": "初始化失败",
+      "refreshFailed": "刷新天气失败",
+      "setLocationFailed": "设置位置失败",
+      "toggleUnitFailed": "切换温度单位失败",
+      "toggleAutoRefreshFailed": "切换自动刷新失败",
+      "refreshLocationFailed": "刷新位置失败",
+      "resetStatsFailed": "清空统计数据失败",
+      "weatherDataNotReturned": "天气API未返回当前天气数据",
+      "cannotGetWeatherData": "无法获取${city}的天气数据",
+      "cannotFindCity": "无法找到城市",
+      "requestTimeout": "请求超时",
+      "responseParsingFailed": "响应数据解析失败"
+    },
+    "info": {
+      "noWeatherData": "暂无天气数据，请先刷新"
+    },
+    "warning": {
+      "resetStatsConfirm": "确定要清空所有使用统计数据吗？此操作无法撤销。",
+      "clearData": "清空数据"
+    }
+  },
+  "usagePanel": {
+    "title": "使用时长统计 🕐",
+    "buttons": {
+      "refresh": "🔄 刷新"
+    },
+    "tabs": {
+      "overview": "总时长",
+      "locations": "位置分布",
+      "weather": "天气分布"
+    },
+    "timeRange": {
+      "today": "今天",
+      "week": "本周",
+      "month": "本月",
+      "all": "全部"
+    },
+    "cards": {
+      "totalDuration": "总时长"
+    },
+    "charts": {
+      "daily30Days": "过去30天日均使用时长"
+    },
+    "table": {
+      "location": "位置",
+      "weather": "天气",
+      "duration": "使用时长",
+      "percentage": "占比",
+      "noData": "暂无数据",
+      "loading": "加载中..."
+    },
+    "formats": {
+      "minutes": "${minutes}分钟",
+      "hours": "${hours}小时",
+      "hoursMinutes": "${hours}小时${minutes}分钟"
+    }
+  },
+  "deviceLanguage": {
+    "zh-CN": "中文",
+    "en-US": "英文"
+  }
+}

@@ -6,6 +6,7 @@
 import * as vscode from 'vscode';
 import { UsageManager } from './usageManager';
 import { TimeRange } from './types';
+import { getI18n } from './i18n/i18nManager';
 
 /**
  * 使用统计面板管理器
@@ -64,9 +65,10 @@ export class UsagePanel {
 
     console.log('[UsagePanel] 创建新的WebView面板');
     // 创建新的WebView面板
+    const i18n = getI18n();
     this.panel = vscode.window.createWebviewPanel(
       'usageStats',
-      '使用时长统计 🕐',
+      i18n.t('usagePanel.title'),
       vscode.ViewColumn.One,
       {
         enableScripts: true,
@@ -109,22 +111,45 @@ export class UsagePanel {
    * 创建WebView的HTML内容
    */
   private createWebviewContent(): string {
-    const webviewContent = this.getWebviewContent();
-    // 替换资源URI
-    // 注意：这里我们直接使用相对路径，WebView会自动处理
-    return webviewContent;
+    const i18n = getI18n();
+    
+    // 获取所有需要的翻译文本
+    const translations = {
+      title: i18n.t('usagePanel.title'),
+      refreshBtn: i18n.t('usagePanel.buttons.refresh'),
+      tab1: i18n.t('usagePanel.tabs.overview'),
+      tab2: i18n.t('usagePanel.tabs.locations'),
+      tab3: i18n.t('usagePanel.tabs.weather'),
+      today: i18n.t('usagePanel.timeRange.today'),
+      week: i18n.t('usagePanel.timeRange.week'),
+      month: i18n.t('usagePanel.timeRange.month'),
+      all: i18n.t('usagePanel.timeRange.all'),
+      loading: i18n.t('usagePanel.table.loading'),
+      dailyChart: i18n.t('usagePanel.charts.daily30Days'),
+      locationHeader: i18n.t('usagePanel.table.location'),
+      weatherHeader: i18n.t('usagePanel.table.weather'),
+      durationHeader: i18n.t('usagePanel.table.duration'),
+      percentageHeader: i18n.t('usagePanel.table.percentage'),
+      noData: i18n.t('usagePanel.table.noData'),
+      totalDuration: i18n.t('usagePanel.cards.totalDuration'),
+      minutesFormat: i18n.t('usagePanel.formats.minutes'),
+      hoursFormat: i18n.t('usagePanel.formats.hours'),
+      hoursMinutesFormat: i18n.t('usagePanel.formats.hoursMinutes'),
+    };
+
+    return this.getWebviewContent(translations);
   }
 
   /**
    * 获取WebView的HTML内容
    */
-  private getWebviewContent(): string {
+  private getWebviewContent(translations: any): string {
     return `<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>使用时长统计</title>
+    <title>${translations.title}</title>
     <style>
         * {
             margin: 0;
@@ -388,37 +413,37 @@ export class UsagePanel {
 <body>
     <div class="container">
         <div class="header">
-            <div class="title">使用时长统计 🕐</div>
+            <div class="title">${translations.title}</div>
             <div class="buttons">
-                <button onclick="refreshData()" title="刷新数据">🔄 刷新</button>
+                <button onclick="refreshData()" title="${translations.refreshBtn}">${translations.refreshBtn}</button>
             </div>
         </div>
 
         <div class="tabs">
-            <button class="tab-button active" onclick="switchTab('overview')">总时长</button>
-            <button class="tab-button" onclick="switchTab('locations')">位置分布</button>
-            <button class="tab-button" onclick="switchTab('weather')">天气分布</button>
+            <button class="tab-button active" onclick="switchTab('overview')">${translations.tab1}</button>
+            <button class="tab-button" onclick="switchTab('locations')">${translations.tab2}</button>
+            <button class="tab-button" onclick="switchTab('weather')">${translations.tab3}</button>
         </div>
 
         <!-- 总时长标签页 -->
         <div id="overview" class="content active">
             <div class="time-range-selector">
-                <button class="time-btn active" onclick="switchTimeRange('today')">今天</button>
-                <button class="time-btn" onclick="switchTimeRange('week')">本周</button>
-                <button class="time-btn" onclick="switchTimeRange('month')">本月</button>
-                <button class="time-btn" onclick="switchTimeRange('all')">全部</button>
+                <button class="time-btn active" onclick="switchTimeRange('today')">${translations.today}</button>
+                <button class="time-btn" onclick="switchTimeRange('week')">${translations.week}</button>
+                <button class="time-btn" onclick="switchTimeRange('month')">${translations.month}</button>
+                <button class="time-btn" onclick="switchTimeRange('all')">${translations.all}</button>
             </div>
 
             <div class="cards" id="overviewCards">
                 <div class="card">
-                    <div class="card-title">加载中...</div>
+                    <div class="card-title">${translations.loading}</div>
                 </div>
             </div>
 
             <div class="chart-container">
-                <div class="chart-title">过去30天日均使用时长</div>
+                <div class="chart-title">${translations.dailyChart}</div>
                 <div class="chart-bars" id="dailyChart">
-                    <div class="loading">加载中...</div>
+                    <div class="loading">${translations.loading}</div>
                 </div>
             </div>
         </div>
@@ -429,14 +454,14 @@ export class UsagePanel {
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>位置</th>
-                            <th>使用时长</th>
-                            <th>占比</th>
+                            <th>${translations.locationHeader}</th>
+                            <th>${translations.durationHeader}</th>
+                            <th>${translations.percentageHeader}</th>
                         </tr>
                     </thead>
                     <tbody id="locationsTable">
                         <tr>
-                            <td colspan="3" style="text-align: center; color: var(--vscode-descriptionForeground);">加载中...</td>
+                            <td colspan="3" style="text-align: center; color: var(--vscode-descriptionForeground);">${translations.loading}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -449,14 +474,14 @@ export class UsagePanel {
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>天气</th>
-                            <th>使用时长</th>
-                            <th>占比</th>
+                            <th>${translations.weatherHeader}</th>
+                            <th>${translations.durationHeader}</th>
+                            <th>${translations.percentageHeader}</th>
                         </tr>
                     </thead>
                     <tbody id="weatherTable">
                         <tr>
-                            <td colspan="3" style="text-align: center; color: var(--vscode-descriptionForeground);">加载中...</td>
+                            <td colspan="3" style="text-align: center; color: var(--vscode-descriptionForeground);">${translations.loading}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -521,15 +546,19 @@ export class UsagePanel {
         console.log('[UsagePanel] WebView 脚本已加载，重置数据请使用命令: weather.resetUsageStats');
 
         function formatMinutes(minutes) {
+            const minutesFormat = ${JSON.stringify(translations.minutesFormat)};
+            const hoursFormat = ${JSON.stringify(translations.hoursFormat)};
+            const hoursMinutesFormat = ${JSON.stringify(translations.hoursMinutesFormat)};
+            
             if (minutes < 60) {
-                return \`\${minutes} 分钟\`;
+                return minutesFormat.replace('\${minutes}', minutes);
             }
             const hours = Math.floor(minutes / 60);
             const mins = minutes % 60;
             if (mins === 0) {
-                return \`\${hours} 小时\`;
+                return hoursFormat.replace('\${hours}', hours);
             }
-            return \`\${hours} 小时 \${mins} 分钟\`;
+            return hoursMinutesFormat.replace('\${hours}', hours).replace('\${minutes}', mins);
         }
 
         function formatHM(minutes) {
@@ -555,7 +584,7 @@ export class UsagePanel {
             
             const cardsHtml = \`
                 <div class="card">
-                    <div class="card-title">总时长</div>
+                    <div class="card-title">${translations.totalDuration}</div>
                     <div class="card-value">\${formatMinutes(totalMinutes)}</div>
                 </div>
             \`;
@@ -570,7 +599,7 @@ export class UsagePanel {
             const dailyBreakdown = statsData.dailyBreakdown || [];
             
             if (dailyBreakdown.length === 0) {
-                document.getElementById('dailyChart').innerHTML = '<div class="empty-state">暂无数据</div>';
+                document.getElementById('dailyChart').innerHTML = '<div class="empty-state">${translations.noData}</div>';
                 return;
             }
 
@@ -598,7 +627,7 @@ export class UsagePanel {
             
             if (locations.length === 0) {
                 document.getElementById('locationsTable').innerHTML = 
-                    '<tr><td colspan="3" style="text-align: center; color: var(--vscode-descriptionForeground);">暂无数据</td></tr>';
+                    '<tr><td colspan="3" style="text-align: center; color: var(--vscode-descriptionForeground);">${translations.noData}</td></tr>';
                 return;
             }
 
@@ -630,7 +659,7 @@ export class UsagePanel {
             
             if (weathers.length === 0) {
                 document.getElementById('weatherTable').innerHTML = 
-                    '<tr><td colspan="3" style="text-align: center; color: var(--vscode-descriptionForeground);">暂无数据</td></tr>';
+                    '<tr><td colspan="3" style="text-align: center; color: var(--vscode-descriptionForeground);">${translations.noData}</td></tr>';
                 return;
             }
 

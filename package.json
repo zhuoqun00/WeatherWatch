@@ -2,7 +2,7 @@
   "name": "weatherwatch",
   "displayName": "WeatherWatch",
   "description": "在VS Code状态栏实时显示天气信息，支持自动位置检测和多种天气参数 | Real-time weather display in VS Code status bar with auto location detection",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "publisher": "ZhuoqunLi",
   "icon": "media/icon.png",
   "license": "MIT",
@@ -34,8 +34,9 @@
     "onStartupFinished"
   ],
   "scripts": {
-    "vscode:prepublish": "npm run compile",
+    "vscode:prepublish": "npm run compile && npm run copy-i18n",
     "compile": "tsc -p ./",
+    "copy-i18n": "mkdir -p dist/i18n && cp src/i18n/*.json dist/i18n/",
     "watch": "tsc -watch -p ./",
     "lint": "eslint src --ext ts",
     "pretest": "npm run compile && npm run lint",
@@ -56,50 +57,50 @@
     "commands": [
       {
         "command": "weather.refreshWeather",
-        "title": "刷新天气",
-        "category": "Weather",
+        "title": "%command.weather.refreshWeather%",
+        "category": "%command.category%",
         "icon": "$(refresh)"
       },
       {
         "command": "weather.setLocation",
-        "title": "设置位置",
-        "category": "Weather",
+        "title": "%command.weather.setLocation%",
+        "category": "%command.category%",
         "icon": "$(location)"
       },
       {
         "command": "weather.showDetails",
-        "title": "显示天气详情",
-        "category": "Weather",
+        "title": "%command.weather.showDetails%",
+        "category": "%command.category%",
         "icon": "$(info)"
       },
       {
         "command": "weather.toggleTemperatureUnit",
-        "title": "切换温度单位",
-        "category": "Weather",
+        "title": "%command.weather.toggleTemperatureUnit%",
+        "category": "%command.category%",
         "icon": "$(symbol-number)"
       },
       {
         "command": "weather.toggleAutoRefresh",
-        "title": "切换自动刷新",
-        "category": "Weather",
+        "title": "%command.weather.toggleAutoRefresh%",
+        "category": "%command.category%",
         "icon": "$(sync)"
       },
       {
         "command": "weather.refreshLocation",
-        "title": "刷新位置",
-        "category": "Weather",
+        "title": "%command.weather.refreshLocation%",
+        "category": "%command.category%",
         "icon": "$(location)"
       },
       {
         "command": "weather.showUsageStats",
-        "title": "显示使用时长统计",
-        "category": "Weather",
+        "title": "%command.weather.showUsageStats%",
+        "category": "%command.category%",
         "icon": "$(graph)"
       },
       {
         "command": "weather.resetUsageStats",
-        "title": "清空使用统计数据",
-        "category": "Weather",
+        "title": "%command.weather.resetUsageStats%",
+        "category": "%command.category%",
         "icon": "$(clear-all)"
       }
     ],
@@ -141,14 +142,14 @@
     },
     "configuration": {
       "type": "object",
-      "title": "天气",
+      "title": "%config.weather%",
       "properties": {
         "weather.refreshInterval": {
           "type": "number",
           "default": 10,
           "minimum": 1,
           "maximum": 120,
-          "description": "自动刷新间隔（分钟）"
+          "description": "%config.weather.autoRefreshInterval.description%"
         },
         "weather.temperatureUnit": {
           "type": "string",
@@ -158,10 +159,10 @@
             "F"
           ],
           "enumDescriptions": [
-            "摄氏度",
-            "华氏度"
+            "Celsius",
+            "Fahrenheit"
           ],
-          "description": "温度显示单位"
+          "description": "%config.weather.temperatureUnit.description%"
         },
         "weather.city": {
           "type": [
@@ -169,12 +170,12 @@
             "null"
           ],
           "default": null,
-          "description": "手动设置的城市名称（设置此选项可覆盖自动IP定位）"
+          "description": "%config.weather.manualCity.description%"
         },
         "weather.autoRefresh": {
           "type": "boolean",
           "default": true,
-          "description": "是否启用自动刷新天气信息"
+          "description": "%config.weather.enableAutoRefresh.description%"
         }
       }
     }

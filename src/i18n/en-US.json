@@ -1,0 +1,180 @@
+{
+  "ui": {
+    "statusBar": {
+      "name": "Weather Information",
+      "loading": "Loading weather...",
+      "failed": "Failed to fetch weather"
+    },
+    "quickPick": {
+      "location": "📍 Location",
+      "currentWeather": "Current Weather",
+      "temperatureRange": "🌡️ Temperature Range",
+      "humidity": "💧 Humidity",
+      "windSpeed": "💨 Wind Speed",
+      "visibility": "👁️ Visibility",
+      "uvIndex": "☀️ UV Index"
+    },
+    "details": {
+      "detailsPanel": "Weather Details"
+    },
+    "webview": {
+      "title": "Usage Statistics",
+      "noData": "No weather data, please refresh first"
+    }
+  },
+  "weather": {
+    "descriptions": {
+      "clear": "Clear",
+      "mostlyClear": "Mostly Clear",
+      "partlyCloudy": "Partly Cloudy",
+      "overcast": "Overcast",
+      "fog": "Foggy",
+      "rime": "Rime Fog",
+      "drizzleLarge": "Drizzle",
+      "drizzleModerate": "Moderate Drizzle",
+      "drizzleHeavy": "Heavy Drizzle",
+      "rainSmall": "Light Rain",
+      "rainModerate": "Moderate Rain",
+      "rainHeavy": "Heavy Rain",
+      "snowSmall": "Light Snow",
+      "snowModerate": "Moderate Snow",
+      "snowHeavy": "Heavy Snow",
+      "rainShowerSmall": "Rain Showers",
+      "rainShowerModerate": "Moderate Rain Showers",
+      "rainShowerHeavy": "Heavy Rain Showers",
+      "snowShowerSmall": "Light Snow Showers",
+      "snowShowerHeavy": "Heavy Snow Showers",
+      "thunderstorm": "Thunderstorm",
+      "thunderstormSmallHail": "Thunderstorm with Small Hail",
+      "thunderstormLargeHail": "Thunderstorm with Large Hail",
+      "unclear": "Unclear"
+    },
+    "windDirections": {
+      "N": "North",
+      "NNE": "North Northeast",
+      "NE": "Northeast",
+      "ENE": "East Northeast",
+      "E": "East",
+      "ESE": "East Southeast",
+      "SE": "Southeast",
+      "SSE": "South Southeast",
+      "S": "South",
+      "SSW": "South Southwest",
+      "SW": "Southwest",
+      "WSW": "West Southwest",
+      "W": "West",
+      "WNW": "West Northwest",
+      "NW": "Northwest",
+      "NNW": "North Northwest"
+    },
+    "tooltips": {
+      "location": "Weather",
+      "weather": "Weather",
+      "temperature": "Temperature",
+      "feelsLike": "Feels Like",
+      "maxMin": "Max/Min",
+      "humidity": "Humidity",
+      "windSpeed": "Wind Speed",
+      "windGust": "Wind Gust",
+      "windDirection": "Wind Direction",
+      "visibility": "Visibility",
+      "pressure": "Pressure",
+      "uvIndex": "UV Index",
+      "cloudCover": "Cloud Cover",
+      "precipitation": "Precipitation",
+      "sunriseSunset": "Sunrise/Sunset",
+      "sunrise": "Sunrise",
+      "sunset": "Sunset",
+      "updateTime": "Update Time"
+    }
+  },
+  "commands": {
+    "titles": {
+      "refresh": "Refresh Weather",
+      "setLocation": "Set Location",
+      "showDetails": "Show Weather Details",
+      "toggleTemperatureUnit": "Toggle Temperature Unit",
+      "toggleAutoRefresh": "Toggle Auto Refresh",
+      "refreshLocation": "Refresh Location",
+      "showUsageStats": "Show Usage Statistics",
+      "resetUsageStats": "Reset Usage Statistics"
+    }
+  },
+  "messages": {
+    "success": {
+      "locationUpdated": "Location updated to:",
+      "temperatureUnitToggled": "Temperature unit switched to:",
+      "autoRefreshEnabled": "Auto refresh enabled",
+      "autoRefreshDisabled": "Auto refresh disabled",
+      "usageStatsReset": "✓ Usage statistics cleared successfully!",
+      "weatherUpdated": "Weather information updated",
+      "locationSet": "Location set to:"
+    },
+    "error": {
+      "emptyCity": "City name cannot be empty",
+      "cityNotFound": "City not found",
+      "locationUnavailable": "Location information unavailable",
+      "cannotDetectLocation": "Cannot detect location",
+      "cannotGetLocation": "Cannot get location information",
+      "initializationFailed": "Initialization failed",
+      "refreshFailed": "Failed to refresh weather",
+      "setLocationFailed": "Failed to set location",
+      "toggleUnitFailed": "Failed to toggle temperature unit",
+      "toggleAutoRefreshFailed": "Failed to toggle auto refresh",
+      "refreshLocationFailed": "Failed to refresh location",
+      "resetStatsFailed": "Failed to reset statistics",
+      "weatherDataNotReturned": "Weather API did not return current weather data",
+      "cannotGetWeatherData": "Cannot get weather data for ${city}",
+      "cannotFindCity": "Cannot find city",
+      "requestTimeout": "Request timeout",
+      "responseParsingFailed": "Failed to parse response data"
+    },
+    "info": {
+      "noWeatherData": "No weather data available, please refresh first"
+    },
+    "warning": {
+      "resetStatsConfirm": "Are you sure you want to clear all usage statistics? This action cannot be undone.",
+      "clearData": "Clear Data"
+    }
+  },
+  "usagePanel": {
+    "title": "Usage Statistics 🕐",
+    "buttons": {
+      "refresh": "🔄 Refresh"
+    },
+    "tabs": {
+      "overview": "Total Duration",
+      "locations": "Location Distribution",
+      "weather": "Weather Distribution"
+    },
+    "timeRange": {
+      "today": "Today",
+      "week": "This Week",
+      "month": "This Month",
+      "all": "All"
+    },
+    "cards": {
+      "totalDuration": "Total Duration"
+    },
+    "charts": {
+      "daily30Days": "Daily Average Usage in Last 30 Days"
+    },
+    "table": {
+      "location": "Location",
+      "weather": "Weather",
+      "duration": "Usage Duration",
+      "percentage": "Percentage",
+      "noData": "No data",
+      "loading": "Loading..."
+    },
+    "formats": {
+      "minutes": "${minutes} minutes",
+      "hours": "${hours} hours",
+      "hoursMinutes": "${hours} hours ${minutes} minutes"
+    }
+  },
+  "deviceLanguage": {
+    "zh-CN": "Chinese",
+    "en-US": "English"
+  }
+}

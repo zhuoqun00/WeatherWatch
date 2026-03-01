@@ -5,6 +5,7 @@
 
 import * as https from 'https';
 import { Location, WeatherInfo } from './types';
+import { getI18n } from './i18n/i18nManager';
 
 /**
  * 天气提供者类
@@ -47,6 +48,9 @@ export class WeatherProvider {
    * @returns API URL
    */
   private static buildWeatherUrl(location: Location): string {
+    const i18n = getI18n();
+    const language = i18n.getCurrentLanguage() === 'zh-CN' ? 'zh' : 'en';
+    
     const params = new URLSearchParams({
       latitude: location.latitude.toString(),
       longitude: location.longitude.toString(),
@@ -68,7 +72,7 @@ export class WeatherProvider {
         ','
       ),
       timezone: 'auto',
-      language: 'zh',
+      language: language,
     });
 
     return `${this.API_BASE}?${params.toString()}`;
@@ -122,38 +126,41 @@ export class WeatherProvider {
   }
 
   /**
-   * 根据WMO天气代码获取中文天气描述
+   * 根据WMO天气代码获取天气描述
    * @param code WMO天气代码
    * @returns 天气描述
    */
   private static getWeatherDescription(code: number): string {
+    const i18n = getI18n();
+    
     const weatherCodes: { [key: number]: string } = {
-      0: '晴朗',
-      1: '主要晴朗',
-      2: '部分多云',
-      3: '阴天',
-      45: '有雾',
-      48: '沉积雾',
-      51: '毛毛雨',
-      53: '中等毛毛雨',
-      55: '浓毛毛雨',
-      61: '小雨',
-      63: '中等雨',
-      65: '大雨',
-      71: '小雪',
-      73: '中雪',
-      75: '大雪',
-      80: '阵雨',
-      81: '中等阵雨',
-      82: '暴雨',
-      85: '小阵雪',
-      86: '大阵雪',
-      95: '雷暴',
-      96: '小冰雹雷暴',
-      99: '大冰雹雷暴',
+      0: 'clear',
+      1: 'mostlyClear',
+      2: 'partlyCloudy',
+      3: 'overcast',
+      45: 'fog',
+      48: 'rime',
+      51: 'drizzleLarge',
+      53: 'drizzleModerate',
+      55: 'drizzleHeavy',
+      61: 'rainSmall',
+      63: 'rainModerate',
+      65: 'rainHeavy',
+      71: 'snowSmall',
+      73: 'snowModerate',
+      75: 'snowHeavy',
+      80: 'rainShowerSmall',
+      81: 'rainShowerModerate',
+      82: 'rainShowerHeavy',
+      85: 'snowShowerSmall',
+      86: 'snowShowerHeavy',
+      95: 'thunderstorm',
+      96: 'thunderstormSmallHail',
+      99: 'thunderstormLargeHail',
     };
 
-    return weatherCodes[code] || '模糊不清';
+    const keyName = weatherCodes[code] || 'unclear';
+    return i18n.t(`weather.descriptions.${keyName}`);
   }
 
   /**
