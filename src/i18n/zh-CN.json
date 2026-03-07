@@ -85,7 +85,8 @@
       "sunriseSunset": "日出日落",
       "sunrise": "日出",
       "sunset": "日落",
-      "updateTime": "更新时间"
+      "updateTime": "更新时间",
+      "details": "大气详情"
     }
   },
   "commands": {
@@ -96,8 +97,7 @@
       "toggleTemperatureUnit": "切换温度单位",
       "toggleAutoRefresh": "切换自动刷新",
       "refreshLocation": "刷新位置",
-      "showUsageStats": "显示使用时长统计",
-      "resetUsageStats": "清空使用统计数据"
+      "setLanguage": "设置显示语言"
     }
   },
   "messages": {
@@ -106,7 +106,6 @@
       "temperatureUnitToggled": "温度单位已切换为:",
       "autoRefreshEnabled": "自动刷新已启用",
       "autoRefreshDisabled": "自动刷新已禁用",
-      "usageStatsReset": "✓ 使用统计数据已成功清空！",
       "weatherUpdated": "天气信息已更新",
       "locationSet": "位置已设置为:"
     },
@@ -122,7 +121,6 @@
       "toggleUnitFailed": "切换温度单位失败",
       "toggleAutoRefreshFailed": "切换自动刷新失败",
       "refreshLocationFailed": "刷新位置失败",
-      "resetStatsFailed": "清空统计数据失败",
       "weatherDataNotReturned": "天气API未返回当前天气数据",
       "cannotGetWeatherData": "无法获取${city}的天气数据",
       "cannotFindCity": "无法找到城市",
@@ -131,50 +129,6 @@
     },
     "info": {
       "noWeatherData": "暂无天气数据，请先刷新"
-    },
-    "warning": {
-      "resetStatsConfirm": "确定要清空所有使用统计数据吗？此操作无法撤销。",
-      "clearData": "清空数据"
     }
-  },
-  "usagePanel": {
-    "title": "使用时长统计 🕐",
-    "buttons": {
-      "refresh": "🔄 刷新"
-    },
-    "tabs": {
-      "overview": "总时长",
-      "locations": "位置分布",
-      "weather": "天气分布"
-    },
-    "timeRange": {
-      "today": "今天",
-      "week": "本周",
-      "month": "本月",
-      "all": "全部"
-    },
-    "cards": {
-      "totalDuration": "总时长"
-    },
-    "charts": {
-      "daily30Days": "过去30天日均使用时长"
-    },
-    "table": {
-      "location": "位置",
-      "weather": "天气",
-      "duration": "使用时长",
-      "percentage": "占比",
-      "noData": "暂无数据",
-      "loading": "加载中..."
-    },
-    "formats": {
-      "minutes": "${minutes}分钟",
-      "hours": "${hours}小时",
-      "hoursMinutes": "${hours}小时${minutes}分钟"
-    }
-  },
-  "deviceLanguage": {
-    "zh-CN": "中文",
-    "en-US": "英文"
   }
 }

@@ -6,15 +6,12 @@
 import * as vscode from 'vscode';
 import { StatusBarUI } from './statusBarUI';
 import { CommandHandler } from './commandHandler';
-import { UsageManager } from './usageManager';
-import { UsagePanel } from './usagePanel';
 import { initI18n, getI18n } from './i18n/i18nManager';
+import { ConfigManager } from './config';
 
 // 全局变量，保持对象引用以避免垃圾回收
 let statusBarUI: StatusBarUI;
 let commandHandler: CommandHandler;
-let usageManager: UsageManager;
-let usagePanel: UsagePanel;
 let disposables: vscode.Disposable[] = [];
 
 /**
@@ -26,24 +23,16 @@ export function activate(context: vscode.ExtensionContext) {
   console.log(`插件存储路径: ${context.extensionPath}`);
 
   try {
-    // 初始化 i18n（必须最先初始化）
-    const i18n = initI18n(context.extensionUri);
+    // 初始化 i18n（必须最先初始化），使用用户配置的语言，默认英文
+    const i18n = initI18n(context.extensionUri, ConfigManager.getLanguage());
     console.log(`✓ I18nManager 初始化成功，当前语言: ${i18n.getCurrentLanguage()}`);
 
     // 初始化UI
     statusBarUI = new StatusBarUI();
     console.log('✓ StatusBarUI 初始化成功');
 
-    // 初始化使用统计管理器
-    usageManager = new UsageManager(context);
-    console.log('✓ UsageManager 初始化成功');
-
-    // 初始化使用统计面板
-    usagePanel = new UsagePanel(context, usageManager);
-    console.log('✓ UsagePanel 初始化成功');
-
-    // 初始化命令处理器（需要usagePanel的引用）
-    commandHandler = new CommandHandler(statusBarUI, usageManager, usagePanel);
+    // 初始化命令处理器
+    commandHandler = new CommandHandler(statusBarUI);
     console.log('✓ CommandHandler 初始化成功');
 
     // 注册所有命令
@@ -62,9 +51,19 @@ export function activate(context: vscode.ExtensionContext) {
       statusBarUI.showError(`初始化失败: ${errorMsg}`);
     });
 
+    // 监听语言配置变更，动态切换插件显示语言
+    context.subscriptions.push(
+      vscode.workspace.onDidChangeConfiguration((event) => {
+        if (event.affectsConfiguration('weather.language')) {
+          const newLang = ConfigManager.getLanguage();
+          getI18n().changeLanguage(newLang);
+          console.log(`[extension] 语言已切换为: ${newLang}`);
+        }
+      })
+    );
+
     // 将UI对象添加到上下文的清理列表
     context.subscriptions.push(statusBarUI);
-    context.subscriptions.push(usagePanel);
 
     console.log('✓ 天气插件初始化完成');
   } catch (error) {
@@ -84,16 +83,6 @@ export function deactivate() {
     // 清理命令处理器
     if (commandHandler) {
       commandHandler.dispose();
-    }
-
-    // 清理使用统计管理器
-    if (usageManager) {
-      usageManager.dispose();
-    }
-
-    // 清理使用统计面板
-    if (usagePanel) {
-      usagePanel.dispose();
     }
 
     // 清理UI

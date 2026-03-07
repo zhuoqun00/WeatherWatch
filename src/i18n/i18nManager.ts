@@ -25,33 +25,11 @@ export class I18nManager {
   }
 
   /**
-   * 初始化，自动检测VS Code的语言
-   * @param language 可选的强制语言代码
+   * 初始化，读取用户配置的语言
+   * @param language 语言代码
    */
-  init(language?: string): void {
-    let targetLanguage: LanguageCode = 'en-US';
-
-    // 如果提供了强制语言，使用提供的语言
-    if (language) {
-      if (language === 'zh-CN' || language === 'en-US') {
-        targetLanguage = language as LanguageCode;
-      } else if (language.startsWith('zh')) {
-        // 中文相关的所有 locale 映射到 zh-CN
-        targetLanguage = 'zh-CN';
-      }
-    } else {
-      // 自动检测 VS Code 的语言
-      const vscodeLanguage = vscode.env.language;
-      console.log(`[I18nManager] VS Code language: ${vscodeLanguage}`);
-
-      if (vscodeLanguage.startsWith('zh')) {
-        targetLanguage = 'zh-CN';
-      } else {
-        targetLanguage = 'en-US';
-      }
-    }
-
-    this.currentLanguage = targetLanguage;
+  init(language: 'en-US' | 'zh-CN' = 'en-US'): void {
+    this.currentLanguage = language;
     console.log(`[I18nManager] 初始化完成，当前语言: ${this.currentLanguage}`);
   }
 
@@ -204,11 +182,11 @@ let i18nInstance: I18nManager | null = null;
  * 初始化全局 i18n 实例
  * @param extensionUri 扩展 URI
  */
-export function initI18n(extensionUri: vscode.Uri): I18nManager {
+export function initI18n(extensionUri: vscode.Uri, language: 'en-US' | 'zh-CN' = 'en-US'): I18nManager {
   if (!i18nInstance) {
     i18nInstance = new I18nManager(extensionUri);
-    i18nInstance.init();
   }
+  i18nInstance.init(language);
   return i18nInstance;
 }
 

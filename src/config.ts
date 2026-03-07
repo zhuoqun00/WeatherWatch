@@ -68,6 +68,16 @@ export class ConfigManager {
   }
 
   /**
+   * 获取插件显示语言
+   * @returns 语言代码 ('en-US' 或 'zh-CN')
+   */
+  static getLanguage(): 'en-US' | 'zh-CN' {
+    const config = vscode.workspace.getConfiguration(this.CONFIG_SECTION);
+    const lang = config.get<string>('language', 'en-US');
+    return lang === 'zh-CN' ? 'zh-CN' : 'en-US';
+  }
+
+  /**
    * 设置城市名称
    * @param city 城市名称
    */

@@ -5,9 +5,8 @@
   "command.weather.toggleTemperatureUnit": "Toggle Temperature Unit",
   "command.weather.toggleAutoRefresh": "Toggle Auto Refresh",
   "command.weather.refreshLocation": "Refresh Location",
-  "command.weather.showUsageStats": "Show Usage Statistics",
-  "command.weather.resetUsageStats": "Reset Usage Statistics",
-  "command.category": "Weather",
+  "command.weather.setLanguage": "Set Display Language",
+  "command.category": "WeatherWatch",
   "config.weather": "Weather",
   "config.weather.autoRefreshInterval.title": "Auto Refresh Interval",
   "config.weather.autoRefreshInterval.description": "Auto refresh interval (minutes)",
@@ -16,5 +15,9 @@
   "config.weather.manualCity.title": "Manual City Name",
   "config.weather.manualCity.description": "Manually set city name (leave empty to auto-detect)",
   "config.weather.enableAutoRefresh.title": "Enable Auto Refresh",
-  "config.weather.enableAutoRefresh.description": "Enable auto refresh for weather updates"
+  "config.weather.enableAutoRefresh.description": "Enable auto refresh for weather updates",
+  "config.weather.language.title": "Display Language",
+  "config.weather.language.description": "Plugin display language (requires reload to take effect)",
+  "config.weather.language.enum.enUS": "English",
+  "config.weather.language.enum.zhCN": "Chinese (Simplified)"
 }

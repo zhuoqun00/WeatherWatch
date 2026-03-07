@@ -9,8 +9,6 @@ import { WeatherProvider } from './weatherProvider';
 import { StatusBarUI } from './statusBarUI';
 import { ConfigManager } from './config';
 import { Location, WeatherInfo } from './types';
-import { UsageManager } from './usageManager';
-import { UsagePanel } from './usagePanel';
 import { getI18n } from './i18n/i18nManager';
 
 /**
@@ -19,17 +17,12 @@ import { getI18n } from './i18n/i18nManager';
  */
 export class CommandHandler {
   private statusBarUI: StatusBarUI;
-  private usageManager: UsageManager;
-  private usagePanel: UsagePanel;
   private refreshTimer: NodeJS.Timeout | null = null;
-  private windowStateListener: vscode.Disposable | null = null;
   private currentLocation: Location | null = null;
   private currentWeather: WeatherInfo | null = null;
 
-  constructor(statusBarUI: StatusBarUI, usageManager: UsageManager, usagePanel: UsagePanel) {
+  constructor(statusBarUI: StatusBarUI) {
     this.statusBarUI = statusBarUI;
-    this.usageManager = usageManager;
-    this.usagePanel = usagePanel;
   }
 
   /**
@@ -81,17 +74,10 @@ export class CommandHandler {
       )
     );
 
-    // 显示使用统计命令
+    // 设置显示语言命令
     disposables.push(
-      vscode.commands.registerCommand('weather.showUsageStats', () =>
-        this.handleShowUsageStats()
-      )
-    );
-
-    // 重置使用统计命令
-    disposables.push(
-      vscode.commands.registerCommand('weather.resetUsageStats', () =>
-        this.handleResetUsageStats()
+      vscode.commands.registerCommand('weather.setLanguage', () =>
+        this.handleSetLanguage()
       )
     );
 
@@ -129,19 +115,11 @@ export class CommandHandler {
       // 获取天气信息
       await this.fetchAndUpdateWeather();
 
-      // 开始使用时长统计会话
-      if (this.currentWeather) {
-        this.usageManager.startSession(this.currentLocation, this.currentWeather.description);
-      }
-
       // 设置自动刷新
       this.setupAutoRefresh();
 
       // 监听配置变更
       this.setupConfigListener();
-
-      // 设置窗口焦点监听
-      this.setupWindowFocusListener();
 
       console.log('[CommandHandler] 初始化完成');
     } catch (error) {
@@ -321,9 +299,6 @@ export class CommandHandler {
     // 更新状态栏显示
     const unit = ConfigManager.getTemperatureUnit();
     this.statusBarUI.updateWeather(weather, unit);
-
-    // 更新使用统计会话信息
-    this.usageManager.updateCurrentSession(this.currentLocation, weather.description);
   }
 
   /**
@@ -372,57 +347,45 @@ export class CommandHandler {
   }
 
   /**
-   * 监听窗口焦点变化
-   * 窗口获得焦点时恢复计时，失去焦点时暂停
+   * 处理设置显示语言命令
    */
-  private setupWindowFocusListener(): void {
-    this.windowStateListener = vscode.window.onDidChangeWindowState((event) => {
-      if (event.focused) {
-        console.log('[CommandHandler] VS Code窗口获得焦点，恢复计时');
-        this.usageManager.resumeSession();
-      } else {
-        console.log('[CommandHandler] VS Code窗口失去焦点，暂停计时');
-        this.usageManager.pauseSession();
-      }
-    });
-  }
-
-  /**
-   * 处理显示使用统计命令
-   */
-  private handleShowUsageStats(): void {
-    console.log('[CommandHandler] 执行显示使用统计命令');
-    // 此命令将由UsagePanel处理，这里只是注册入口
-    vscode.commands.executeCommand('usageStats.openPanel');
-  }
-
-  /**
-   * 处理重置使用统计命令
-   */
-  private async handleResetUsageStats(): Promise<void> {
-    console.log('[CommandHandler] 执行重置使用统计命令');
-    
+  private async handleSetLanguage(): Promise<void> {
     const i18n = getI18n();
-    const confirmed = await vscode.window.showWarningMessage(
-      i18n.t('messages.warning.resetStatsConfirm'),
-      { modal: true },
-      i18n.t('messages.warning.clearData')
-    );
-    
-    if (confirmed === i18n.t('messages.warning.clearData')) {
-      try {
-        await this.usageManager.resetStats();
-        vscode.window.showInformationMessage(i18n.t('messages.success.usageStatsReset'));
-        console.log('[CommandHandler] 使用统计数据重置成功');
-        
-        // 刷新使用统计面板的数据（如果面板已打开）
-        this.usagePanel.refreshData();
-      } catch (error) {
-        const errorMsg = error instanceof Error ? error.message : '未知错误';
-        const i18n = getI18n();
-        vscode.window.showErrorMessage(i18n.tWithParams('messages.error.resetStatsFailed', { error: errorMsg }));
-        console.error('[CommandHandler] 重置统计数据失败:', errorMsg);
-      }
+    const currentLang = i18n.getCurrentLanguage();
+
+    const items: vscode.QuickPickItem[] = [
+      {
+        label: 'English',
+        description: 'en-US',
+        picked: currentLang === 'en-US',
+      },
+      {
+        label: '中文（简体）',
+        description: 'zh-CN',
+        picked: currentLang === 'zh-CN',
+      },
+    ];
+
+    const selected = await vscode.window.showQuickPick(items, {
+      title: i18n.t('commands.titles.setLanguage'),
+      placeHolder: i18n.t('commands.titles.setLanguage'),
+      canPickMany: false,
+    });
+
+    if (!selected || selected.description === currentLang) {
+      return;
+    }
+
+    const newLang = selected.description as 'en-US' | 'zh-CN';
+    await vscode.workspace
+      .getConfiguration('weather')
+      .update('language', newLang, vscode.ConfigurationTarget.Global);
+
+    console.log(`[CommandHandler] 显示语言已设置为: ${newLang}`);
+
+    // 语言切换后刷新天气，使新语言的天气描述立即生效
+    if (this.currentLocation) {
+      await this.fetchAndUpdateWeather();
     }
   }
 
@@ -430,15 +393,8 @@ export class CommandHandler {
    * 清理资源
    */
   dispose(): void {
-    // 结束使用统计会话
-    this.usageManager.endSession();
-
     if (this.refreshTimer) {
       clearInterval(this.refreshTimer);
-    }
-
-    if (this.windowStateListener) {
-      this.windowStateListener.dispose();
     }
   }
 }

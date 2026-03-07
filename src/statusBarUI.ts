@@ -86,7 +86,7 @@ export class StatusBarUI {
     );
     markdown.appendMarkdown(`- **${i18n.t('weather.tooltips.maxMin')}**: ${weather.temperatureMax.toFixed(1)}°C / ${weather.temperatureMin.toFixed(1)}°C\n`);
 
-    markdown.appendMarkdown(`## ${i18n.t('usagePanel.title')}\n\n`);
+    markdown.appendMarkdown(`## ${i18n.t('weather.tooltips.details')}\n\n`);
     markdown.appendMarkdown(`- **${i18n.t('ui.quickPick.humidity')}**: ${weather.humidity}%\n`);
     markdown.appendMarkdown(`- **${i18n.t('ui.quickPick.windSpeed')}**: ${weather.windSpeed.toFixed(1)} km/h\n`);
     markdown.appendMarkdown(`- **${i18n.t('weather.tooltips.windGust')}**: ${weather.windGust.toFixed(1)} km/h\n`);
@@ -148,7 +148,7 @@ export class StatusBarUI {
     const weather = this.currentWeather;
     const options: vscode.QuickPickItem[] = [
       {
-        label: `📍 ${i18n.t('ui.quickPick.location')}: ${weather.location.city}, ${weather.location.country}`,
+        label: `${i18n.t('ui.quickPick.location')}: ${weather.location.city}, ${weather.location.country}`,
         description: `${weather.location.latitude.toFixed(2)}°, ${weather.location.longitude.toFixed(2)}°`,
       },
       {
@@ -156,23 +156,23 @@ export class StatusBarUI {
         description: `${i18n.t('weather.tooltips.temperature')} ${WeatherProvider.formatTemperature(weather.temperature, this.temperatureUnit)}`,
       },
       {
-        label: `🌡️ ${i18n.t('ui.quickPick.temperatureRange')}`,
+        label: `${i18n.t('ui.quickPick.temperatureRange')}`,
         description: `${weather.temperatureMax.toFixed(1)}°C ~ ${weather.temperatureMin.toFixed(1)}°C`,
       },
       {
-        label: `💧 ${i18n.t('ui.quickPick.humidity')}: ${weather.humidity}%`,
+        label: `${i18n.t('ui.quickPick.humidity')}: ${weather.humidity}%`,
         description: `${i18n.t('weather.tooltips.feelsLike')}: ${WeatherProvider.formatTemperature(weather.feelsLike, this.temperatureUnit)}`,
       },
       {
-        label: `💨 ${i18n.t('ui.quickPick.windSpeed')}: ${weather.windSpeed.toFixed(1)} km/h`,
+        label: `${i18n.t('ui.quickPick.windSpeed')}: ${weather.windSpeed.toFixed(1)} km/h`,
         description: `${i18n.t('weather.tooltips.windGust')}: ${weather.windGust.toFixed(1)} km/h`,
       },
       {
-        label: `👁️ ${i18n.t('ui.quickPick.visibility')}: ${weather.visibility.toFixed(1)} km`,
+        label: `${i18n.t('ui.quickPick.visibility')}: ${weather.visibility.toFixed(1)} km`,
         description: `${i18n.t('weather.tooltips.pressure')}: ${weather.pressure.toFixed(1)} hPa`,
       },
       {
-        label: `☀️ ${i18n.t('ui.quickPick.uvIndex')}: ${weather.uvIndex.toFixed(1)}`,
+        label: `${i18n.t('ui.quickPick.uvIndex')}: ${weather.uvIndex.toFixed(1)}`,
         description: `${i18n.t('weather.tooltips.cloudCover')}: ${weather.cloudCover}%`,
       },
     ];
@@ -204,13 +204,6 @@ export class StatusBarUI {
     this.statusBarItem.tooltip = error;
     this.statusBarItem.show();
     console.error('❌ 错误状态:', error);
-  }
-
-  /**
-   * 隐藏状态栏
-   */
-  hide(): void {
-    this.statusBarItem.hide();
   }
 
   /**

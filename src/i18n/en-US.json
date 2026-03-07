@@ -85,7 +85,8 @@
       "sunriseSunset": "Sunrise/Sunset",
       "sunrise": "Sunrise",
       "sunset": "Sunset",
-      "updateTime": "Update Time"
+      "updateTime": "Update Time",
+      "details": "Atmospheric Details"
     }
   },
   "commands": {
@@ -96,8 +97,7 @@
       "toggleTemperatureUnit": "Toggle Temperature Unit",
       "toggleAutoRefresh": "Toggle Auto Refresh",
       "refreshLocation": "Refresh Location",
-      "showUsageStats": "Show Usage Statistics",
-      "resetUsageStats": "Reset Usage Statistics"
+      "setLanguage": "Set Display Language"
     }
   },
   "messages": {
@@ -106,7 +106,6 @@
       "temperatureUnitToggled": "Temperature unit switched to:",
       "autoRefreshEnabled": "Auto refresh enabled",
       "autoRefreshDisabled": "Auto refresh disabled",
-      "usageStatsReset": "✓ Usage statistics cleared successfully!",
       "weatherUpdated": "Weather information updated",
       "locationSet": "Location set to:"
     },
@@ -122,7 +121,6 @@
       "toggleUnitFailed": "Failed to toggle temperature unit",
       "toggleAutoRefreshFailed": "Failed to toggle auto refresh",
       "refreshLocationFailed": "Failed to refresh location",
-      "resetStatsFailed": "Failed to reset statistics",
       "weatherDataNotReturned": "Weather API did not return current weather data",
       "cannotGetWeatherData": "Cannot get weather data for ${city}",
       "cannotFindCity": "Cannot find city",
@@ -131,50 +129,6 @@
     },
     "info": {
       "noWeatherData": "No weather data available, please refresh first"
-    },
-    "warning": {
-      "resetStatsConfirm": "Are you sure you want to clear all usage statistics? This action cannot be undone.",
-      "clearData": "Clear Data"
     }
-  },
-  "usagePanel": {
-    "title": "Usage Statistics 🕐",
-    "buttons": {
-      "refresh": "🔄 Refresh"
-    },
-    "tabs": {
-      "overview": "Total Duration",
-      "locations": "Location Distribution",
-      "weather": "Weather Distribution"
-    },
-    "timeRange": {
-      "today": "Today",
-      "week": "This Week",
-      "month": "This Month",
-      "all": "All"
-    },
-    "cards": {
-      "totalDuration": "Total Duration"
-    },
-    "charts": {
-      "daily30Days": "Daily Average Usage in Last 30 Days"
-    },
-    "table": {
-      "location": "Location",
-      "weather": "Weather",
-      "duration": "Usage Duration",
-      "percentage": "Percentage",
-      "noData": "No data",
-      "loading": "Loading..."
-    },
-    "formats": {
-      "minutes": "${minutes} minutes",
-      "hours": "${hours} hours",
-      "hoursMinutes": "${hours} hours ${minutes} minutes"
-    }
-  },
-  "deviceLanguage": {
-    "zh-CN": "Chinese",
-    "en-US": "English"
   }
 }

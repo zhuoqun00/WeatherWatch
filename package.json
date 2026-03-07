@@ -2,7 +2,7 @@
   "name": "weatherwatch",
   "displayName": "WeatherWatch",
   "description": "在VS Code状态栏实时显示天气信息，支持自动位置检测和多种天气参数 | Real-time weather display in VS Code status bar with auto location detection",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "publisher": "ZhuoqunLi",
   "icon": "media/icon.png",
   "license": "MIT",
@@ -92,16 +92,10 @@
         "icon": "$(location)"
       },
       {
-        "command": "weather.showUsageStats",
-        "title": "%command.weather.showUsageStats%",
+        "command": "weather.setLanguage",
+        "title": "%command.weather.setLanguage%",
         "category": "%command.category%",
-        "icon": "$(graph)"
-      },
-      {
-        "command": "weather.resetUsageStats",
-        "title": "%command.weather.resetUsageStats%",
-        "category": "%command.category%",
-        "icon": "$(clear-all)"
+        "icon": "$(globe)"
       }
     ],
     "keybindings": [
@@ -133,10 +127,7 @@
           "command": "weather.refreshLocation"
         },
         {
-          "command": "weather.showUsageStats"
-        },
-        {
-          "command": "weather.resetUsageStats"
+          "command": "weather.setLanguage"
         }
       ]
     },
@@ -176,6 +167,19 @@
           "type": "boolean",
           "default": true,
           "description": "%config.weather.enableAutoRefresh.description%"
+        },
+        "weather.language": {
+          "type": "string",
+          "default": "en-US",
+          "enum": [
+            "en-US",
+            "zh-CN"
+          ],
+          "enumDescriptions": [
+            "%config.weather.language.enum.enUS%",
+            "%config.weather.language.enum.zhCN%"
+          ],
+          "description": "%config.weather.language.description%"
         }
       }
     }
